@@ -19,8 +19,19 @@ const jost = Jost({
   display: "swap",
 });
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://orikaliving.com";
+
+const OG_TITLE = "Orika Living — Premium Reed Diffusers Crafted in Lagos";
+const OG_DESCRIPTION =
+  "Premium reed diffusers crafted to transform your space. Six signature scents, beautifully designed for home, retail and hospitality.";
+
 export const metadata: Metadata = {
-  title: "Orika Living — Rooted in Elegance",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Orika Living — Rooted in Elegance",
+    template: "%s · Orika Living",
+  },
   description:
     "Premium reed diffusers crafted to transform your space. Six signature scents, beautifully designed for every environment.",
   keywords: [
@@ -29,14 +40,39 @@ export const metadata: Metadata = {
     "luxury diffuser",
     "Nigeria",
     "Lagos",
+    "Orika Living",
+    "scent",
+    "interior",
   ],
+  authors: [{ name: "Orika Living" }],
+  creator: "Orika Living",
+  publisher: "Orika Living",
+  // app/opengraph-image.png is auto-applied by Next.js — no need to list it
   openGraph: {
-    title: "Orika Living",
-    description: "Premium home fragrance. Rooted in elegance.",
-    url: process.env.NEXT_PUBLIC_SITE_URL,
+    title: OG_TITLE,
+    description: OG_DESCRIPTION,
+    url: SITE_URL,
     siteName: "Orika Living",
     locale: "en_NG",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: OG_TITLE,
+    description: OG_DESCRIPTION,
+  },
+  alternates: {
+    canonical: SITE_URL,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 

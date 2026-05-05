@@ -3,15 +3,21 @@ import { timingSafeEqual } from "node:crypto";
 import { APP_URL } from "./client";
 
 // Required in production: empty/missing values would silently produce
-// predictable HMAC tokens. Fail fast at module load instead.
-const SESSION_SECRET = process.env.SESSION_SECRET ?? "";
-if (!SESSION_SECRET && process.env.NODE_ENV === "production") {
-  throw new Error("SESSION_SECRET is required in production.");
+// predictable HMAC tokens. Fail fast on first call (deferred to runtime so
+// Next.js's build-time page-data collection doesn't trip on missing env
+// vars; Vercel exposes env vars to runtime regardless).
+function getSessionSecret(): string {
+  const secret = process.env.SESSION_SECRET ?? "";
+  if (!secret && process.env.NODE_ENV === "production") {
+    throw new Error("SESSION_SECRET is required in production.");
+  }
+  return secret;
 }
 
 // HMAC-SHA256 of the lowercase email — appended to unsubscribe links so the
 // public endpoint can verify the request came from a real Resend send.
 export async function generateUnsubscribeUrl(email: string): Promise<string> {
+  const SESSION_SECRET = getSessionSecret();
   if (!SESSION_SECRET) return `${APP_URL}/unsubscribe`;
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
@@ -32,6 +38,7 @@ export async function verifyUnsubscribeToken(
   email: string,
   token: string,
 ): Promise<boolean> {
+  const SESSION_SECRET = getSessionSecret();
   if (!SESSION_SECRET || !email || !token) return false;
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
