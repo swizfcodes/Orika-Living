@@ -1,10 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import {
-  sendCampaignAction,
-  initialCampaignState,
-} from "@/lib/newsletter/actions";
+import { sendCampaignAction } from "@/lib/newsletter/actions";
+import { initialCampaignState } from "@/lib/newsletter/state";
 
 interface Props {
   activeCount: number;

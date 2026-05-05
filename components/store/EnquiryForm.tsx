@@ -2,10 +2,8 @@
 
 import { useActionState } from "react";
 import type { EnquiryType } from "@/lib/types";
-import {
-  submitEnquiryAction,
-  initialEnquiryState,
-} from "@/lib/enquiries/actions";
+import { submitEnquiryAction } from "@/lib/enquiries/actions";
+import { initialEnquiryState } from "@/lib/enquiries/state";
 
 const enquiryTypes: EnquiryType[] = [
   "Retail / Stockist Partnership",

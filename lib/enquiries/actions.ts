@@ -9,14 +9,7 @@ import {
   sendEnquiryConfirmation,
 } from "@/lib/email/templates/enquiries";
 import type { EnquiryType } from "@/lib/types";
-
-export interface EnquiryFormState {
-  status: "idle" | "success" | "error";
-  message?: string;
-  fieldErrors?: Partial<Record<"name" | "email" | "phone" | "type" | "message", string>>;
-}
-
-export const initialEnquiryState: EnquiryFormState = { status: "idle" };
+import type { EnquiryFormState } from "@/lib/enquiries/state";
 
 // Server action: validate → insert via service role (enquiries RLS allows
 // public insert, but service role keeps it uniform with the rest of the

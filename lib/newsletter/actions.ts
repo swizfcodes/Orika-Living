@@ -11,15 +11,12 @@ import {
   sendNewsletterWelcome,
   sendNewsletterCampaign,
 } from "@/lib/email/templates/newsletter";
+import type {
+  SubscribeFormState,
+  CampaignFormState,
+} from "@/lib/newsletter/state";
 
 // ── Public subscribe ──────────────────────────────────────────────────────────
-
-export interface SubscribeFormState {
-  status: "idle" | "success" | "error";
-  message?: string;
-}
-
-export const initialSubscribeState: SubscribeFormState = { status: "idle" };
 
 const subscribeSchema = z.object({
   email: z.string().email("Please enter a valid email."),
@@ -30,58 +27,79 @@ export async function subscribeAction(
   _prev: SubscribeFormState,
   formData: FormData,
 ): Promise<SubscribeFormState> {
-  const parsed = subscribeSchema.safeParse({
-    email: String(formData.get("email") ?? "").trim().toLowerCase(),
-    source: String(formData.get("source") ?? "footer"),
-  });
-  if (!parsed.success) {
+  try {
+    const parsed = subscribeSchema.safeParse({
+      email: String(formData.get("email") ?? "").trim().toLowerCase(),
+      source: String(formData.get("source") ?? "footer"),
+    });
+    if (!parsed.success) {
+      return {
+        status: "error",
+        message: parsed.error.issues[0]?.message ?? "Invalid email.",
+      };
+    }
+
+    // Rate-limit by email AND IP — separate buckets so neither dimension
+    // alone can be used to drown the limiter. Wrapped in try/catch so a
+    // missing migration or transient Supabase outage fails open instead
+    // of breaking the subscribe flow entirely.
+    let allowed = true;
+    try {
+      const ip = getClientIp(await headers());
+      const [emailRl, ipRl] = await Promise.all([
+        checkRateLimit("newsletter-subscribe", `email:${parsed.data.email}`, 5, 3600),
+        checkRateLimit("newsletter-subscribe", `ip:${ip}`, 20, 3600),
+      ]);
+      allowed = emailRl.allowed && ipRl.allowed;
+    } catch (err) {
+      console.error("[subscribeAction] ratelimit check failed:", err);
+    }
+    if (!allowed) {
+      return {
+        status: "error",
+        message: "Too many requests. Please try again shortly.",
+      };
+    }
+
+    const supabase = createAdminClient();
+    // Upsert so re-subscribing after an unsubscribe clears the unsubscribed_at.
+    const { error } = await supabase
+      .from("newsletter_subscribers")
+      .upsert(
+        {
+          email: parsed.data.email,
+          source: parsed.data.source,
+          subscribed_at: new Date().toISOString(),
+          unsubscribed_at: null,
+        },
+        { onConflict: "email" },
+      );
+
+    if (error) {
+      console.error("[subscribeAction] upsert failed:", error);
+      return {
+        status: "error",
+        message: "Could not subscribe right now. Please try again.",
+      };
+    }
+
+    await sendNewsletterWelcome(parsed.data.email).catch((err) => {
+      console.error("[subscribeAction] welcome email failed:", err);
+    });
+
+    return {
+      status: "success",
+      message: "You're on the list — check your inbox.",
+    };
+  } catch (err) {
+    // Last-resort guard: any unhandled throw becomes a clean form error
+    // instead of a Vercel 500 page.
+    console.error("[subscribeAction] unexpected error:", err);
     return {
       status: "error",
-      message: parsed.error.issues[0]?.message ?? "Invalid email.",
+      message: "Something went wrong. Please try again.",
     };
   }
-
-  // Rate-limit by email AND IP — separate buckets so neither dimension
-  // alone can be used to drown the limiter.
-  const ip = getClientIp(await headers());
-  const [emailRl, ipRl] = await Promise.all([
-    checkRateLimit("newsletter-subscribe", `email:${parsed.data.email}`, 5, 3600),
-    checkRateLimit("newsletter-subscribe", `ip:${ip}`, 20, 3600),
-  ]);
-  if (!emailRl.allowed || !ipRl.allowed) {
-    return {
-      status: "error",
-      message: "Too many requests. Please try again shortly.",
-    };
-  }
-
-  const supabase = createAdminClient();
-  // Upsert so re-subscribing after an unsubscribe clears the unsubscribed_at.
-  const { error } = await supabase
-    .from("newsletter_subscribers")
-    .upsert(
-      {
-        email: parsed.data.email,
-        source: parsed.data.source,
-        subscribed_at: new Date().toISOString(),
-        unsubscribed_at: null,
-      },
-      { onConflict: "email" },
-    );
-
-  if (error) {
-    return {
-      status: "error",
-      message: "Could not subscribe right now. Please try again.",
-    };
-  }
-
-  await sendNewsletterWelcome(parsed.data.email).catch(() => {});
-
-  return {
-    status: "success",
-    message: "You're on the list — check your inbox.",
-  };
 }
 
 // ── Admin: send a campaign ────────────────────────────────────────────────────
@@ -95,14 +113,6 @@ const campaignSchema = z.object({
   ctaHref: z.string().url().optional().or(z.literal("")),
   ctaLabel: z.string().max(40).optional().or(z.literal("")),
 });
-
-export interface CampaignFormState {
-  status: "idle" | "success" | "error";
-  message?: string;
-  recipientCount?: number;
-}
-
-export const initialCampaignState: CampaignFormState = { status: "idle" };
 
 export async function sendCampaignAction(
   _prev: CampaignFormState,

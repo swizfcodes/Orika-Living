@@ -1,10 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import {
-  subscribeAction,
-  initialSubscribeState,
-} from "@/lib/newsletter/actions";
+import { subscribeAction } from "@/lib/newsletter/actions";
+import { initialSubscribeState } from "@/lib/newsletter/state";
 
 interface Props {
   source?: string;

@@ -6,10 +6,8 @@ import { useActionState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import {
-  subscribeAction,
-  initialSubscribeState,
-} from "@/lib/newsletter/actions";
+import { subscribeAction } from "@/lib/newsletter/actions";
+import { initialSubscribeState } from "@/lib/newsletter/state";
 import logo from "@/assets/images/orikaLogo.png";
 
 const STORAGE_KEY = "orika.newsletter.seen.v1";
