@@ -1,6 +1,7 @@
 import Nav from "@/components/store/Nav";
 import Footer from "@/components/store/Footer";
 import CartDrawer from "@/components/store/CartDrawer";
+import NewsletterPopup from "@/components/store/NewsletterPopup";
 import LiveRevalidator from "@/components/realtime/LiveRevalidator";
 
 const storeTables = ["products", "scents", "signatures"] as const;
@@ -17,6 +18,7 @@ export default function StoreLayout({
       <main className="flex-1">{children}</main>
       <Footer />
       <CartDrawer />
+      <NewsletterPopup />
     </div>
   );
 }

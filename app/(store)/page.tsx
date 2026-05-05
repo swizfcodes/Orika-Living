@@ -7,6 +7,7 @@ import { getFeaturedProducts } from "@/lib/products/server";
 import FadeIn from "@/components/motion/FadeIn";
 import ProductCard from "@/components/store/ProductCard";
 import ScentCard from "@/components/store/ScentCard";
+import OrikaLoader from "@/components/store/OrikaLoader";
 
 const brandDescriptors = [
   "Alluring",
@@ -26,6 +27,8 @@ export default async function HomePage() {
 
   return (
     <>
+      <OrikaLoader />
+
       {/* Hero */}
       <section className="relative min-h-[90vh] overflow-hidden bg-(--linen)">
         <div className="absolute inset-0 pointer-events-none">

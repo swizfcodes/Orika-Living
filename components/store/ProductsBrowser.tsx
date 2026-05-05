@@ -251,11 +251,11 @@ function FilterRow<T extends string>({
   onChange,
 }: FilterRowProps<T>) {
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-      <span className="text-[0.6rem] tracking-[0.35em] uppercase text-(--smoke) w-16 shrink-0">
+    <div className="space-y-3">
+      <span className="block text-[0.6rem] tracking-[0.35em] uppercase text-(--smoke)">
         {label}
       </span>
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
         {options.map((opt) => {
           const active = opt === value;
           return (
@@ -263,7 +263,7 @@ function FilterRow<T extends string>({
               key={opt}
               type="button"
               onClick={() => onChange(opt)}
-              className={`text-[0.65rem] tracking-[0.25em] uppercase px-4 py-2 border transition-colors ${
+              className={`text-[0.65rem] tracking-[0.25em] uppercase px-4 py-3 border transition-colors text-center ${
                 active
                   ? "bg-(--charcoal) text-(--warm-white) border-(--charcoal)"
                   : "bg-transparent text-(--charcoal) border-(--border) hover:border-(--charcoal)"
