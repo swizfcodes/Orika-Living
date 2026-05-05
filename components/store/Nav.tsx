@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X, ShoppingBag } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/store";
@@ -21,9 +22,19 @@ const rightLinks = [
 
 const navLinks = [...leftLinks, ...rightLinks];
 
+// Hash links (/#scents, /#vision) are anchors within the homepage — they
+// don't represent distinct routes, so they never get an "active" state.
+// Only proper page routes do.
+function isActiveLink(pathname: string, href: string): boolean {
+  if (href.includes("#")) return false;
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export default function Nav() {
   const dispatch = useAppDispatch();
   const count = useAppSelector(selectCartCount);
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -71,15 +82,19 @@ export default function Nav() {
               )}
             </button>
             <nav className="hidden md:flex items-center gap-8 lg:gap-10">
-              {leftLinks.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className="text-[0.7rem] tracking-[0.3em] uppercase text-(--charcoal) gold-underline"
-                >
-                  {l.label}
-                </Link>
-              ))}
+              {leftLinks.map((l) => {
+                const active = isActiveLink(pathname, l.href);
+                return (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`text-[0.7rem] tracking-[0.3em] uppercase gold-underline transition-colors ${active ? "is-active text-(--gold)" : "text-(--charcoal)"}`}
+                  >
+                    {l.label}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
 
@@ -99,15 +114,19 @@ export default function Nav() {
           {/* Right: links 4–5 on desktop + cart */}
           <div className="flex items-center justify-end gap-6 md:gap-8 lg:gap-10">
             <nav className="hidden md:flex items-center gap-8 lg:gap-10">
-              {rightLinks.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className="text-[0.7rem] tracking-[0.3em] uppercase text-(--charcoal) gold-underline"
-                >
-                  {l.label}
-                </Link>
-              ))}
+              {rightLinks.map((l) => {
+                const active = isActiveLink(pathname, l.href);
+                return (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`text-[0.7rem] tracking-[0.3em] uppercase gold-underline transition-colors ${active ? "is-active text-(--gold)" : "text-(--charcoal)"}`}
+                  >
+                    {l.label}
+                  </Link>
+                );
+              })}
             </nav>
             <button
               type="button"
@@ -158,20 +177,24 @@ export default function Nav() {
             </button>
           </div>
           <nav className="flex-1 flex flex-col items-center justify-center gap-8 px-8">
-            {navLinks.map((l, i) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                onClick={() => setMobileOpen(false)}
-                className="font-display text-4xl text-(--charcoal) hover:text-(--gold) transition-colors"
-                style={{
-                  opacity: 0,
-                  animation: `fadeInUp 0.4s ease-out ${i * 0.05 + 0.1}s forwards`,
-                }}
-              >
-                {l.label}
-              </Link>
-            ))}
+            {navLinks.map((l, i) => {
+              const active = isActiveLink(pathname, l.href);
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setMobileOpen(false)}
+                  aria-current={active ? "page" : undefined}
+                  className={`font-display text-4xl transition-colors hover:text-(--gold) ${active ? "text-(--gold) italic" : "text-(--charcoal)"}`}
+                  style={{
+                    opacity: 0,
+                    animation: `fadeInUp 0.4s ease-out ${i * 0.05 + 0.1}s forwards`,
+                  }}
+                >
+                  {l.label}
+                </Link>
+              );
+            })}
           </nav>
           <div className="shrink-0 px-8 py-8 border-t border-(--border) text-center">
             <p className="text-[0.6rem] tracking-[0.35em] uppercase text-(--smoke)">
