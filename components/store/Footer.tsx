@@ -17,7 +17,7 @@ export default function Footer() {
           />
           <p className="text-sm leading-relaxed opacity-80 max-w-md">
             Premium Nigerian reed diffusers, crafted to transform a room into an
-            experience. Every vessel a quiet statement — rooted in elegance.
+            experience. Every vessel a quiet statement — rooted in nature.
           </p>
           <div className="mt-10 max-w-sm">
             <p className="text-[0.65rem] tracking-[0.35em] uppercase opacity-60 mb-3">

@@ -29,7 +29,7 @@ const OG_DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Orika Living — Rooted in Elegance",
+    default: "Orika Living — Rooted in Nature",
     template: "%s · Orika Living",
   },
   description:

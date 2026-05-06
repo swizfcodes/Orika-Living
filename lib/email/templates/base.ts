@@ -31,7 +31,7 @@ export function baseEmail(body: string, opts?: { unsubUrl?: string }): string {
           <tr>
             <td align="center" style="padding:36px 40px 28px;border-bottom:1px solid #E6DFD1;">
               <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;color:#2B2620;font-size:28px;font-weight:400;letter-spacing:0.02em;">Orika Living</p>
-              <p style="margin:0;color:#8E867A;font-size:9px;letter-spacing:0.4em;text-transform:uppercase;">Rooted in Elegance</p>
+              <p style="margin:0;color:#8E867A;font-size:9px;letter-spacing:0.4em;text-transform:uppercase;">Rooted in Nature</p>
             </td>
           </tr>
 

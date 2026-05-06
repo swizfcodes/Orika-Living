@@ -115,7 +115,7 @@ export default function AdminLoginPage() {
         </form>
 
         <p className="text-center text-xs tracking-[0.2em] uppercase text-(--smoke) mt-8">
-          Rooted in Elegance
+          Rooted in Nature
         </p>
       </motion.div>
     </main>

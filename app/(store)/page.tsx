@@ -53,7 +53,7 @@ export default async function HomePage() {
             <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-(--charcoal) leading-[0.95]">
               Rooted in
               <br />
-              <span className="italic">Elegance</span>
+              <span className="italic">Nature</span>
             </h1>
           </FadeIn>
           <FadeIn delay={0.35}>
@@ -262,7 +262,7 @@ export default async function HomePage() {
           </FadeIn>
           <FadeIn delay={0.3}>
             <p className="mt-6 text-sm tracking-[0.25em] uppercase text-(--gold)">
-              Orika embodies refined luxury, rooted in elegance.
+              Orika embodies refined luxury, rooted in nature.
             </p>
           </FadeIn>
         </div>
