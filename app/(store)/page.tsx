@@ -54,7 +54,7 @@ export default async function HomePage() {
 
         <div className="relative z-10 min-h-[90vh] flex flex-col justify-center items-center px-6 lg:px-10 py-24 text-center">
           <FadeIn delay={0.1}>
-            <p className="inline-block bg-black/70 text-[0.7rem] tracking-[0.5em] uppercase text-(--warm-white) px-4 py-2 mb-6 rounded-lg">
+            <p className="inline-block whitespace-nowrap bg-black/70 text-[0.6rem] sm:text-[0.7rem] tracking-[0.3em] sm:tracking-[0.5em] uppercase text-(--warm-white) px-4 py-2 mb-6 rounded-lg">
               Orika Living · Lagos, Nigeria
             </p>
           </FadeIn>
