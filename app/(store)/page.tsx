@@ -107,11 +107,11 @@ export default async function HomePage() {
             </p>
           </FadeIn>
           <FadeIn delay={0.25}>
-            <ul className="mt-12 flex flex-wrap justify-center gap-3">
+            <ul className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-2xl mx-auto">
               {brandDescriptors.map((d) => (
                 <li
                   key={d}
-                  className="border border-(--border) rounded-full px-5 py-2 text-[0.65rem] tracking-[0.35em] uppercase text-(--charcoal) bg-(--warm-white)"
+                  className="border border-(--border) rounded-full px-5 py-2 text-[0.65rem] tracking-[0.35em] uppercase text-(--charcoal) bg-(--warm-white) text-center"
                 >
                   {d}
                 </li>
@@ -143,7 +143,7 @@ export default async function HomePage() {
             </div>
           </FadeIn>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {scents.map((scent, i) => (
               <FadeIn key={scent.slug} delay={i * 0.05}>
                 <ScentCard scent={scent} />
