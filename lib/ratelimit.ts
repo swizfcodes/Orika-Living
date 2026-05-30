@@ -1,5 +1,4 @@
 import "server-only";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export interface RateLimitResult {
   allowed: boolean;
@@ -7,9 +6,8 @@ export interface RateLimitResult {
   resetAt: Date;
 }
 
-// Calls the `check_rate_limit` Postgres RPC. Fails open: any infra error
-// returns `allowed: true` so a Supabase outage cannot lock real users out
-// of public flows. Errors are logged for visibility.
+const store = new Map<string, { count: number; resetAt: number }>();
+
 export async function checkRateLimit(
   action: string,
   identifier: string,
@@ -17,37 +15,27 @@ export async function checkRateLimit(
   windowSeconds: number,
 ): Promise<RateLimitResult> {
   const key = `${action}:${identifier}`;
-  const supabase = createAdminClient();
-  const { data, error } = await supabase.rpc("check_rate_limit", {
-    p_key: key,
-    p_max: max,
-    p_window_seconds: windowSeconds,
-  });
+  const now = Date.now();
+  const windowMs = windowSeconds * 1000;
+  const entry = store.get(key);
 
-  if (error || !data || !Array.isArray(data) || data.length === 0) {
-    console.error("[ratelimit] rpc failed:", { key, error });
+  if (!entry || now > entry.resetAt) {
+    store.set(key, { count: 1, resetAt: now + windowMs });
     return {
       allowed: true,
-      remaining: max,
-      resetAt: new Date(Date.now() + windowSeconds * 1000),
+      remaining: max - 1,
+      resetAt: new Date(now + windowMs),
     };
   }
 
-  const row = data[0] as {
-    allowed: boolean;
-    remaining: number;
-    reset_at: string;
-  };
+  entry.count += 1;
   return {
-    allowed: row.allowed,
-    remaining: row.remaining,
-    resetAt: new Date(row.reset_at),
+    allowed: entry.count <= max,
+    remaining: Math.max(0, max - entry.count),
+    resetAt: new Date(entry.resetAt),
   };
 }
 
-// Extracts the originating client IP from common proxy headers. Falls back
-// to a sentinel so missing IPs still get rate-limited (as one shared bucket)
-// rather than bypassing the limiter entirely.
 export function getClientIp(headers: Headers): string {
   const forwarded = headers.get("x-forwarded-for");
   if (forwarded) {

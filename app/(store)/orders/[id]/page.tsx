@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { apiFetch } from "@/lib/api/client";
 import type { Order } from "@/lib/types";
 import { fromKobo } from "@/lib/types";
 import FadeIn from "@/components/motion/FadeIn";
@@ -10,10 +10,9 @@ interface PageProps {
   searchParams: Promise<{ ref?: string; pending?: string }>;
 }
 
-// Intentionally uses the admin client: orders RLS scopes reads to the
-// authenticated customer, which guest checkouts don't have. The UUID
-// in the URL is the only way to reach this page, so treat it as a
-// capability token — not enumerable, not indexed by search engines.
+// The order id in the URL is the only way to reach this page — treat
+// it as a capability token: not enumerable, not indexed by search
+// engines. The hub's GET /store/orders/:id returns the order.
 export const metadata = {
   robots: { index: false, follow: false },
 };
@@ -24,15 +23,18 @@ export default async function OrderSuccessPage({ params, searchParams }: PagePro
     searchParams,
   ]);
 
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("orders")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error || !data) notFound();
-  const order = data as Order;
+  let order: Order;
+  try {
+    order = await apiFetch<Order>(`/store/orders/${id}`, {
+      method: "GET",
+      cache: "no-store",
+    });
+  } catch (err) {
+    if ((err as { status?: number }).status !== 404) {
+      console.error("[OrderSuccessPage] order fetch failed:", err);
+    }
+    notFound();
+  }
 
   const isPaid = order.status === "paid" || order.status === "processing" ||
     order.status === "shipped" || order.status === "delivered";

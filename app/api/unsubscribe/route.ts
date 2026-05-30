@@ -1,6 +1,4 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { verifyUnsubscribeToken } from "@/lib/email/tokens";
 import { checkRateLimit, getClientIp } from "@/lib/ratelimit";
 
 function page(body: string, status = 200): NextResponse {
@@ -34,50 +32,38 @@ export async function GET(request: NextRequest) {
   const rl = await checkRateLimit("unsubscribe", ip, 30, 60);
   if (!rl.allowed) {
     return page(
-      `<p class="eyebrow">Slow down</p>
-       <h1>Too many requests.</h1>
-       <p>Please wait a moment and try again.</p>
-       <a href="/">Return to Orika Living</a>`,
+      `<p class="eyebrow">Slow down</p><h1>Too many requests.</h1><p>Please wait a moment and try again.</p><a href="/">Return to Orika Living</a>`,
       429,
     );
   }
 
   const url = new URL(request.url);
-  const email = url.searchParams.get("email")?.toLowerCase() ?? "";
   const token = url.searchParams.get("token") ?? "";
 
-  if (!email || !token) {
+  if (!token) {
     return page(
-      `<p class="eyebrow">Invalid link</p>
-       <h1>This link isn't valid.</h1>
-       <p>The unsubscribe link appears to be missing information. Please use the link at the bottom of the most recent email we sent you.</p>
-       <a href="/">Return to Orika Living</a>`,
+      `<p class="eyebrow">Invalid link</p><h1>This link isn't valid.</h1><p>Use the link at the bottom of the email we sent you.</p><a href="/">Return to Orika Living</a>`,
       400,
     );
   }
 
-  const valid = await verifyUnsubscribeToken(email, token);
-  if (!valid) {
+  // Call your ERP backend
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:7000";
+  const res = await fetch(`${apiUrl}/api/store/newsletter/unsubscribe`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+
+  if (!res.ok) {
     return page(
-      `<p class="eyebrow">Invalid link</p>
-       <h1>This link couldn't be verified.</h1>
-       <p>The signature on this unsubscribe link doesn't match. If you'd still like to be removed, reply to any email from us and we'll take care of it.</p>
-       <a href="/">Return to Orika Living</a>`,
+      `<p class="eyebrow">Invalid link</p><h1>This link couldn't be verified.</h1><p>If you'd still like to be removed, reply to any email from us.</p><a href="/">Return to Orika Living</a>`,
       400,
     );
   }
-
-  const supabase = createAdminClient();
-  await supabase
-    .from("newsletter_subscribers")
-    .update({ unsubscribed_at: new Date().toISOString() })
-    .eq("email", email);
 
   return page(
-    `<p class="eyebrow">Unsubscribed</p>
-     <h1>You've been removed from the list.</h1>
-     <p>You won't receive any more newsletters from Orika Living. If this was a mistake, you can subscribe again any time.</p>
-     <a href="/">Return to Orika Living</a>`,
+    `<p class="eyebrow">Unsubscribed</p><h1>You've been removed from the list.</h1><p>You won't receive any more newsletters from Orika Living.</p><a href="/">Return to Orika Living</a>`,
   );
 }
 

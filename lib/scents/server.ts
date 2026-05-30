@@ -1,7 +1,16 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
-import { createPublicClient } from "@/lib/supabase/public";
+import { apiGet } from "@/lib/api/client";
 import { scents as defaults, type ScentMeta } from "./index";
+
+// ─────────────────────────────────────────────────────────────
+// lib/scents/server.ts
+//
+// Public scent reads. Migrated from Supabase to the hub-system API
+// (/api/store/scents). The static `defaults` fallback is kept — if
+// the API is unreachable or the table is empty the storefront still
+// renders, exactly as before.
+// ─────────────────────────────────────────────────────────────
 
 interface ScentRow {
   family: string;
@@ -16,6 +25,10 @@ interface ScentRow {
   ink: string;
   image: string | null;
   display_order: number;
+}
+
+interface ListResponse {
+  data: ScentRow[];
 }
 
 function toMeta(row: ScentRow): ScentMeta {
@@ -34,22 +47,19 @@ function toMeta(row: ScentRow): ScentMeta {
   };
 }
 
-// Returns every scent in the DB (in display order). Falls back to the
-// static defaults if the table is empty or the query fails — keeps the
-// storefront alive pre-migration.
-//
-// Cached cross-request via unstable_cache; admin scent CRUD invalidates
-// via revalidateTag("scents", "max") for stale-while-revalidate refresh.
 export const getScents = unstable_cache(
   async (): Promise<ScentMeta[]> => {
-    const supabase = createPublicClient();
-    const { data } = await supabase
-      .from("scents")
-      .select("*")
-      .order("display_order", { ascending: true });
-    const rows = (data ?? []) as ScentRow[];
-    if (rows.length === 0) return defaults;
-    return rows.map(toMeta);
+    try {
+      const res = await apiGet<ListResponse>("/store/scents", {
+        tags: ["scents"],
+      });
+      const rows = res.data ?? [];
+      if (rows.length === 0) return defaults;
+      return rows.map(toMeta);
+    } catch (err) {
+      console.error("[getScents] API call failed, using defaults:", err);
+      return defaults;
+    }
   },
   ["scents:list"],
   { tags: ["scents"] },
@@ -57,14 +67,18 @@ export const getScents = unstable_cache(
 
 export const getScentBySlug = unstable_cache(
   async (slug: string): Promise<ScentMeta | undefined> => {
-    const supabase = createPublicClient();
-    const { data } = await supabase
-      .from("scents")
-      .select("*")
-      .eq("slug", slug)
-      .maybeSingle();
-    if (!data) return undefined;
-    return toMeta(data as ScentRow);
+    try {
+      const row = await apiGet<ScentRow>(
+        `/store/scents/${encodeURIComponent(slug)}`,
+        { tags: ["scents"] },
+      );
+      return toMeta(row);
+    } catch (err) {
+      if ((err as { status?: number }).status === 404) return undefined;
+      console.error("[getScentBySlug] API call failed:", err);
+      // Fall back to a static default if one matches the slug.
+      return defaults.find((s) => s.slug === slug);
+    }
   },
   ["scents:bySlug"],
   { tags: ["scents"] },
