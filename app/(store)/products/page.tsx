@@ -1,4 +1,4 @@
-import { getActiveProducts } from "@/lib/products/server";
+import { getCatalogue } from "@/lib/products/server";
 import { getScents } from "@/lib/scents/server";
 import ProductsBrowser from "@/components/store/ProductsBrowser";
 
@@ -8,16 +8,17 @@ interface PageProps {
 
 export default async function ProductsPage({ searchParams }: PageProps) {
   const { scent } = await searchParams;
-  const [products, scents] = await Promise.all([
-    getActiveProducts(),
+  const [catalogue, scents] = await Promise.all([
+    getCatalogue(),
     getScents(),
   ]);
 
   return (
     <ProductsBrowser
-      products={products}
+      products={catalogue.products}
       scents={scents}
       initialScentSlug={scent}
+      loadFailed={catalogue.status === "error"}
     />
   );
 }

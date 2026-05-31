@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Product } from "@/lib/types";
 import { fromKobo } from "@/lib/types";
-import { getProductImage } from "@/lib/utils/images";
+import { getProductImage, isApiImage } from "@/lib/utils/images";
 import ProductPlaceholder from "./ProductPlaceholder";
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 
 export default function ProductCard({ product, priority }: Props) {
   const image = getProductImage(product);
+  const soldOut = !product.in_stock || product.stock_qty <= 0;
 
   return (
     <Link
@@ -26,14 +27,25 @@ export default function ProductCard({ product, priority }: Props) {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={priority}
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            unoptimized={isApiImage(image)}
+            className={`object-cover transition-transform duration-700 group-hover:scale-105${
+              soldOut ? " opacity-70" : ""
+            }`}
           />
         ) : (
           <ProductPlaceholder
             family={product.scent_family}
             name={product.name}
-            className="absolute inset-0 transition-transform duration-700 group-hover:scale-105"
+            className={`absolute inset-0 transition-transform duration-700 group-hover:scale-105${
+              soldOut ? " opacity-70" : ""
+            }`}
           />
+        )}
+
+        {soldOut && (
+          <span className="absolute top-3 left-3 z-10 bg-(--charcoal)/90 text-(--warm-white) text-[0.55rem] tracking-[0.3em] uppercase px-3 py-1.5">
+            Sold Out
+          </span>
         )}
       </div>
 

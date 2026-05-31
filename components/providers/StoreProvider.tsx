@@ -8,18 +8,33 @@ import type { CartItem } from "@/lib/types";
 
 const STORAGE_KEY = "orika.cart.v1";
 
-function isCartItem(x: unknown): x is CartItem {
-  if (!x || typeof x !== "object") return false;
+// Normalize a stored value into a CartItem, coercing numeric fields that
+// may have been persisted as strings (the API returns Postgres bigint/
+// numeric as strings, and older saved carts captured them that way).
+// Returns null only if a required field is genuinely missing/unusable —
+// so a recoverable cart is repaired rather than wiped.
+function normalizeCartItem(x: unknown): CartItem | null {
+  if (!x || typeof x !== "object") return null;
   const v = x as Record<string, unknown>;
-  return (
-    typeof v.product_id === "string" &&
-    typeof v.name === "string" &&
-    typeof v.price_kobo === "number" &&
-    typeof v.quantity === "number" &&
-    typeof v.image === "string" &&
-    typeof v.size_ml === "number" &&
-    typeof v.format === "string"
-  );
+
+  const price = Number(v.price_kobo);
+  const qty = Number(v.quantity);
+  const size = Number(v.size_ml);
+
+  if (typeof v.product_id !== "string" || !v.product_id) return null;
+  if (typeof v.name !== "string") return null;
+  if (typeof v.format !== "string") return null;
+  if (!Number.isFinite(price) || !Number.isFinite(qty) || qty < 1) return null;
+
+  return {
+    product_id: v.product_id,
+    name: v.name,
+    price_kobo: price,
+    quantity: qty,
+    image: typeof v.image === "string" ? v.image : "",
+    size_ml: Number.isFinite(size) ? size : 0,
+    format: v.format as CartItem["format"],
+  };
 }
 
 export default function StoreProvider({
@@ -33,8 +48,16 @@ export default function StoreProvider({
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed: unknown = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.every(isCartItem)) {
-          store.dispatch(hydrate(parsed));
+        if (Array.isArray(parsed)) {
+          // Repair-and-keep: coerce each item; drop only truly broken ones.
+          const items = parsed
+            .map(normalizeCartItem)
+            .filter((i): i is CartItem => i !== null);
+          if (items.length > 0) {
+            store.dispatch(hydrate(items));
+          } else {
+            localStorage.removeItem(STORAGE_KEY);
+          }
         } else {
           localStorage.removeItem(STORAGE_KEY);
         }

@@ -1,6 +1,7 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
 import { apiGet } from "@/lib/api/client";
+import { resolveImageUrl } from "@/lib/utils/images";
 import { signatures as defaults, type SignatureMeta } from "./index";
 
 // ─────────────────────────────────────────────────────────────
@@ -32,7 +33,7 @@ function toMeta(row: SignatureRow): SignatureMeta {
     size: row.size_label,
     price: row.price_label,
     blurb: row.blurb,
-    image: row.image ?? undefined,
+    image: resolveImageUrl(row.image) ?? undefined,
   };
 }
 

@@ -16,7 +16,21 @@ const scriptSrc = [
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "**.supabase.co" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "**.supabase.co" },
+      // ERP document images (product gallery) served by the hub API.
+      { protocol: "http", hostname: "localhost", port: "7000" },
+      // Production API origin — set NEXT_PUBLIC_IMAGE_HOST to the API's
+      // hostname (e.g. api.orikaliving.com) when deploying.
+      ...(process.env.NEXT_PUBLIC_IMAGE_HOST
+        ? [
+            {
+              protocol: "https" as const,
+              hostname: process.env.NEXT_PUBLIC_IMAGE_HOST,
+            },
+          ]
+        : []),
+    ],
   },
   async headers() {
     return [
@@ -37,7 +51,7 @@ const nextConfig: NextConfig = {
               `script-src ${scriptSrc}`,
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' blob: https://*.supabase.co https://*.paystack.co https://*.paystack.com",
+              "img-src 'self' blob: http://localhost:7000 https://*.supabase.co https://*.paystack.co https://*.paystack.com",
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.paystack.co https://checkout.paystack.com",
               "frame-src https://js.paystack.co https://checkout.paystack.com https://standard.paystack.co",
             ].join("; "),

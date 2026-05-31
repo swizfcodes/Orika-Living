@@ -21,10 +21,15 @@ export default function AddToCart({ product }: Props) {
       addItem({
         product_id: product.id,
         name: product.name,
-        price_kobo: product.price_kobo,
+        // price_kobo and size_ml arrive from the API as strings (Postgres
+        // bigint/numeric are serialized as strings by node-postgres). The
+        // cart — and its persistence validator — expects numbers, so coerce
+        // here at the boundary. Without this the stored item fails the
+        // CartItem shape check on reload and the whole cart is wiped.
+        price_kobo: Number(product.price_kobo),
         quantity: qty,
         image: getProductImage(product) ?? "",
-        size_ml: product.size_ml,
+        size_ml: Number(product.size_ml),
         format: product.format,
       }),
     );

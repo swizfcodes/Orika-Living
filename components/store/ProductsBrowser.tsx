@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { isApiImage } from "@/lib/utils/images";
+import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
 import type { Product, ProductFormat } from "@/lib/types";
 import type { ScentMeta } from "@/lib/scents";
@@ -18,12 +20,14 @@ interface Props {
   products: Product[];
   scents: ScentMeta[];
   initialScentSlug?: string;
+  loadFailed?: boolean;
 }
 
 export default function ProductsBrowser({
   products,
   scents,
   initialScentSlug,
+  loadFailed = false,
 }: Props) {
   const initialFamily = useMemo<string>(() => {
     if (!initialScentSlug) return "All";
@@ -101,6 +105,7 @@ export default function ProductsBrowser({
               fill
               priority={i === 0}
               sizes="100vw"
+              unoptimized={isApiImage(s.image)}
               className="object-cover transition-opacity duration-1000"
               style={{ opacity: i === carouselIndex ? 1 : 0 }}
             />
@@ -114,6 +119,7 @@ export default function ProductsBrowser({
             fill
             priority
             sizes="100vw"
+            unoptimized={isApiImage(activeScent.image)}
             className="object-cover"
           />
         )}
@@ -200,7 +206,7 @@ export default function ProductsBrowser({
 
       <section className="px-6 lg:px-10 py-12">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col gap-6 mb-14 pb-6 border-b border-(--border)">
+          <div id="catalogue-filters" className="flex flex-col gap-6 mb-14 pb-6 border-b border-(--border)">
             <FilterRow
               label="Scent"
               options={["All", ...scents.map((s) => s.family)]}
@@ -215,7 +221,17 @@ export default function ProductsBrowser({
             />
           </div>
 
-          {filtered.length === 0 ? (
+          {loadFailed ? (
+            <CatalogueNotice
+              heading="Our collection is taking a breath"
+              body="We're having trouble loading the full range right now. The scents below are always part of the Orika world — explore them, or reach out and we'll help you directly."
+            />
+          ) : products.length === 0 ? (
+            <CatalogueNotice
+              heading="Back in stock soon"
+              body="Every Orika piece is made in considered batches, so the collection sells through. New stock is on its way — discover the scents below, or get in touch to be the first to know when it returns."
+            />
+          ) : filtered.length === 0 ? (
             <p className="text-center font-display text-2xl text-(--smoke) py-24">
               No pieces match that combination. Try another scent or format.
             </p>
@@ -234,6 +250,44 @@ export default function ProductsBrowser({
         </div>
       </section>
     </>
+  );
+}
+
+interface CatalogueNoticeProps {
+  heading: string;
+  body: string;
+}
+
+// Always-alive empty/error state. The page still shows the hero, the
+// scent filters, and these CTAs — so /products never renders as a void,
+// even when the catalogue is empty or the API is unreachable.
+function CatalogueNotice({ heading, body }: CatalogueNoticeProps) {
+  return (
+    <div className="text-center max-w-xl mx-auto py-20">
+      <h2 className="font-display text-3xl md:text-4xl text-(--charcoal) mb-5">
+        {heading}
+      </h2>
+      <p className="text-base text-(--smoke) leading-relaxed mb-10">{body}</p>
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <button
+          type="button"
+          onClick={() =>
+            document
+              .getElementById("catalogue-filters")
+              ?.scrollIntoView({ behavior: "smooth" })
+          }
+          className="bg-(--charcoal) text-(--warm-white) px-10 py-4 text-xs tracking-[0.3em] uppercase hover:bg-(--ink) transition-colors"
+        >
+          Explore the Scents
+        </button>
+        <Link
+          href="/contact"
+          className="text-[0.7rem] tracking-[0.3em] uppercase text-(--charcoal) gold-underline px-4 py-4"
+        >
+          Get in Touch
+        </Link>
+      </div>
+    </div>
   );
 }
 

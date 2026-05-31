@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { isApiImage } from "@/lib/utils/images";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/lib/store";
 import {
@@ -89,6 +90,7 @@ export default function CartDrawer() {
                             alt={item.name}
                             fill
                             sizes="80px"
+                            unoptimized={isApiImage(item.image)}
                             className="object-cover"
                           />
                         ) : (

@@ -22,6 +22,26 @@ interface ListResponse {
   data: Product[];
 }
 
+// Result of a catalogue read that preserves *why* it's empty so the
+// UI can tell "nothing in stock" apart from "the API is unreachable".
+// getActiveProducts (below) still returns a plain Product[] for callers
+// like the sitemap that don't care about the distinction.
+export type CatalogueResult =
+  | { status: "ok"; products: Product[] }      // succeeded — products may be []
+  | { status: "error"; products: Product[] };  // fetch/parse failed — products is []
+
+export async function getCatalogue(): Promise<CatalogueResult> {
+  try {
+    const res = await apiGet<ListResponse>("/store/products", {
+      tags: ["products"],
+    });
+    return { status: "ok", products: res.data ?? [] };
+  } catch (err) {
+    console.error("[getCatalogue] API call failed:", err);
+    return { status: "error", products: [] };
+  }
+}
+
 export const getActiveProducts = unstable_cache(
   async (): Promise<Product[]> => {
     try {

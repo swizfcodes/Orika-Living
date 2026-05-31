@@ -11,6 +11,7 @@ import {
 } from "@/lib/store/cartSlice";
 import { fromKobo } from "@/lib/types";
 import { createOrderAction } from "@/lib/checkout/actions";
+import { useCheckoutDetails } from "@/lib/checkout/useCheckoutDetails";
 import FadeIn from "@/components/motion/FadeIn";
 
 type FieldErrors = Partial<
@@ -26,6 +27,10 @@ export default function CheckoutPage() {
   const [pending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+
+  // Prefill from previously-entered details (survives refresh + payment
+  // failure). loaded flips true after the client reads localStorage.
+  const { details, loaded, save, clear } = useCheckoutDetails();
 
   const checkoutItems = useMemo(
     () => items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
@@ -81,6 +86,10 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Persist the entered details now — before payment — so that if the
+    // payment fails or is cancelled, the form prefills on the next attempt.
+    save(address);
+
     startTransition(async () => {
       const result = await createOrderAction({
         delivery_address: address,
@@ -117,6 +126,7 @@ export default function CheckoutPage() {
             const body = (await res.json()) as { ok: boolean };
             if (body.ok) {
               dispatch(clearCart());
+              clear();
               router.push(`/orders/${result.order_id}?ref=${reference}`);
             } else {
               router.push(`/orders/${result.order_id}?ref=${reference}&pending=1`);
@@ -146,7 +156,7 @@ export default function CheckoutPage() {
       </FadeIn>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-16 items-start">
-        <form action={onSubmit} className="space-y-8">
+        <form key={loaded ? "loaded" : "empty"} action={onSubmit} className="space-y-8">
           <div>
             <p className="text-[0.65rem] tracking-[0.35em] uppercase text-(--smoke) mb-6">
               Contact
@@ -154,6 +164,7 @@ export default function CheckoutPage() {
             <Field
               name="full_name"
               label="Full name"
+              defaultValue={details.full_name}
               error={fieldErrors.full_name}
               disabled={pending}
             />
@@ -163,6 +174,7 @@ export default function CheckoutPage() {
                 label="Email"
                 type="email"
                 autoComplete="email"
+                defaultValue={details.email}
                 error={fieldErrors.email}
                 disabled={pending}
               />
@@ -171,6 +183,7 @@ export default function CheckoutPage() {
                 label="Phone"
                 type="tel"
                 autoComplete="tel"
+                defaultValue={details.phone}
                 error={fieldErrors.phone}
                 disabled={pending}
               />
@@ -185,6 +198,7 @@ export default function CheckoutPage() {
               name="street"
               label="Street address"
               autoComplete="street-address"
+              defaultValue={details.street}
               error={fieldErrors.street}
               disabled={pending}
             />
@@ -193,6 +207,7 @@ export default function CheckoutPage() {
                 name="city"
                 label="City"
                 autoComplete="address-level2"
+                defaultValue={details.city}
                 error={fieldErrors.city}
                 disabled={pending}
               />
@@ -200,6 +215,7 @@ export default function CheckoutPage() {
                 name="state"
                 label="State"
                 autoComplete="address-level1"
+                defaultValue={details.state}
                 error={fieldErrors.state}
                 disabled={pending}
               />
@@ -276,6 +292,7 @@ interface FieldProps {
   autoComplete?: string;
   error?: string;
   disabled?: boolean;
+  defaultValue?: string;
 }
 
 function Field({
@@ -285,6 +302,7 @@ function Field({
   autoComplete,
   error,
   disabled,
+  defaultValue,
 }: FieldProps) {
   return (
     <div>
@@ -300,6 +318,7 @@ function Field({
         type={type}
         autoComplete={autoComplete}
         disabled={disabled}
+        defaultValue={defaultValue}
         className={`w-full border-b bg-transparent py-2 text-(--charcoal) focus:outline-none transition-colors disabled:opacity-60 ${
           error ? "border-red-400" : "border-(--border) focus:border-(--gold)"
         }`}

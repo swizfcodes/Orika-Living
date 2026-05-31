@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fromKobo } from "@/lib/types";
-import { getProductImage } from "@/lib/utils/images";
+import { getProductImage, isApiImage } from "@/lib/utils/images";
 import { getScents } from "@/lib/scents/server";
 import {
   getProductBySlug,
@@ -61,6 +61,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
+                unoptimized={isApiImage(image)}
                 className="object-cover"
               />
             ) : (

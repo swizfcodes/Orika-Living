@@ -1,6 +1,6 @@
 import "server-only";
-import { unstable_cache } from "next/cache";
 import { apiGet } from "@/lib/api/client";
+import { resolveImageUrl } from "@/lib/utils/images";
 import { scents as defaults, type ScentMeta } from "./index";
 
 // ─────────────────────────────────────────────────────────────
@@ -43,43 +43,44 @@ function toMeta(row: ScentRow): ScentMeta {
     base: row.base_notes,
     swatch: row.swatch,
     ink: row.ink,
-    image: row.image ?? undefined,
+    image: resolveImageUrl(row.image) ?? undefined,
   };
 }
 
-export const getScents = unstable_cache(
-  async (): Promise<ScentMeta[]> => {
-    try {
-      const res = await apiGet<ListResponse>("/store/scents", {
-        tags: ["scents"],
-      });
-      const rows = res.data ?? [];
-      if (rows.length === 0) return defaults;
-      return rows.map(toMeta);
-    } catch (err) {
-      console.error("[getScents] API call failed, using defaults:", err);
-      return defaults;
-    }
-  },
-  ["scents:list"],
-  { tags: ["scents"] },
-);
+// NOTE: deliberately NOT wrapped in unstable_cache. The underlying apiGet
+// already applies ISR tag caching at the fetch layer; an extra
+// unstable_cache layer was freezing scents on a stale value (e.g. the
+// pre-publish empty-API defaults, which carry no image), so newly published
+// products' scents — and their images — never appeared. getCatalogue
+// (products) is a plain fetch for the same reason, which is why products
+// resolved while scents didn't.
+export async function getScents(): Promise<ScentMeta[]> {
+  try {
+    const res = await apiGet<ListResponse>("/store/scents", {
+      tags: ["scents"],
+    });
+    const rows = res.data ?? [];
+    if (rows.length === 0) return defaults;
+    return rows.map(toMeta);
+  } catch (err) {
+    console.error("[getScents] API call failed, using defaults:", err);
+    return defaults;
+  }
+}
 
-export const getScentBySlug = unstable_cache(
-  async (slug: string): Promise<ScentMeta | undefined> => {
-    try {
-      const row = await apiGet<ScentRow>(
-        `/store/scents/${encodeURIComponent(slug)}`,
-        { tags: ["scents"] },
-      );
-      return toMeta(row);
-    } catch (err) {
-      if ((err as { status?: number }).status === 404) return undefined;
-      console.error("[getScentBySlug] API call failed:", err);
-      // Fall back to a static default if one matches the slug.
-      return defaults.find((s) => s.slug === slug);
-    }
-  },
-  ["scents:bySlug"],
-  { tags: ["scents"] },
-);
+export async function getScentBySlug(
+  slug: string,
+): Promise<ScentMeta | undefined> {
+  try {
+    const row = await apiGet<ScentRow>(
+      `/store/scents/${encodeURIComponent(slug)}`,
+      { tags: ["scents"] },
+    );
+    return toMeta(row);
+  } catch (err) {
+    if ((err as { status?: number }).status === 404) return undefined;
+    console.error("[getScentBySlug] API call failed:", err);
+    // Fall back to a static default if one matches the slug.
+    return defaults.find((s) => s.slug === slug);
+  }
+}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { isApiImage } from "@/lib/utils/images";
 import heroProduct from "@/assets/images/orika product no bg.png";
 import { getScents } from "@/lib/scents/server";
 import { getSignatures } from "@/lib/signatures/server";
@@ -216,6 +217,7 @@ export default async function HomePage() {
                         alt={f.name}
                         fill
                         sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+                        unoptimized={isApiImage(f.image)}
                         className="object-cover"
                       />
                     </div>

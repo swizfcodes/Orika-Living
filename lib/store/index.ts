@@ -2,13 +2,26 @@ import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import cartReducer from "./cartSlice";
 
-// The Redux store now holds only client-only UI state (cart). All read paths
-// run on the server (RSC + server actions), so RTK Query is no longer used.
+const CART_KEY = "orika.cart.v1";
+
 export const store = configureStore({
-  reducer: {
-    cart: cartReducer,
-  },
+  reducer: { cart: cartReducer },
 });
+
+// Persist cart to localStorage on every change.
+// Module-level (not inside useEffect) so the subscription is always active
+// regardless of React's effect lifecycle or Strict Mode double-invoke.
+if (typeof window !== "undefined") {
+  let prevItems = store.getState().cart.items;
+  store.subscribe(() => {
+    const nextItems = store.getState().cart.items;
+    if (nextItems === prevItems) return;
+    prevItems = nextItems;
+    try {
+      localStorage.setItem(CART_KEY, JSON.stringify(nextItems));
+    } catch {}
+  });
+}
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

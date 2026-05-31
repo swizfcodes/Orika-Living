@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { ScentMeta } from "@/lib/scents";
+import { isApiImage } from "@/lib/utils/images";
 
 interface Props {
   scent: ScentMeta;
@@ -24,6 +25,7 @@ export default function ScentCard({ scent }: Props) {
               alt={scent.name}
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
+              unoptimized={isApiImage(scent.image)}
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div
