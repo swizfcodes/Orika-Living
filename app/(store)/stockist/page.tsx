@@ -45,14 +45,14 @@ const support = [
   },
 ];
 
-const audience = {
-  age: "24–60+",
-  location: "Nigeria",
-  psychographics:
-    "Aspirational, taste-driven individuals drawn to understated luxury, who see their living spaces as an extension of their identity. Intentional about how their environments look, feel and smell, investing in elevated home aesthetics and sensory experiences that create comfort, calm and quiet sophistication. Willing to pay a premium for products that feel distinctive, well-designed and emotionally resonant.",
-  behaviours:
-    "Intentional, lifestyle-driven behaviours centred on curation and experience. They actively invest in their homes — décor, fragrance and design pieces that enhance atmosphere and reflect personal taste. Shop selectively, prioritising quality and aesthetic alignment over impulse, and repurchase products that integrate seamlessly into their routines.",
-};
+// const audience = {
+//   age: "24–60+",
+//   location: "Nigeria",
+//   psychographics:
+//     "Aspirational, taste-driven individuals drawn to understated luxury, who see their living spaces as an extension of their identity. Intentional about how their environments look, feel and smell, investing in elevated home aesthetics and sensory experiences that create comfort, calm and quiet sophistication. Willing to pay a premium for products that feel distinctive, well-designed and emotionally resonant.",
+//   behaviours:
+//     "Intentional, lifestyle-driven behaviours centred on curation and experience. They actively invest in their homes — décor, fragrance and design pieces that enhance atmosphere and reflect personal taste. Shop selectively, prioritising quality and aesthetic alignment over impulse, and repurchase products that integrate seamlessly into their routines.",
+// };
 
 export default function StockistPage() {
   return (
@@ -62,7 +62,10 @@ export default function StockistPage() {
         <div className="absolute inset-0 pointer-events-none opacity-20">
           <div
             className="absolute -top-32 -right-32 w-160 h-160 rounded-full blur-3xl"
-            style={{ background: "radial-gradient(circle, #D4AE5A 0%, transparent 60%)" }}
+            style={{
+              background:
+                "radial-gradient(circle, #D4AE5A 0%, transparent 60%)",
+            }}
           />
         </div>
         <div className="relative max-w-5xl mx-auto px-6 lg:px-10 py-24 md:py-36 text-center">
@@ -73,21 +76,22 @@ export default function StockistPage() {
           </FadeIn>
           <FadeIn delay={0.1}>
             <h1 className="font-display text-5xl md:text-7xl leading-[0.95]">
-              A considered addition to <span className="italic">your shelf.</span>
+              A considered addition to{" "}
+              <span className="italic">your shelf.</span>
             </h1>
           </FadeIn>
           <FadeIn delay={0.2}>
             <p className="mt-8 text-base md:text-lg opacity-80 max-w-2xl mx-auto leading-relaxed">
-              Orika Living partners with a small, deliberate set of stockists who
-              share our commitment to considered retail. If that sounds like you,
-              we&rsquo;d love to start the conversation.
+              Orika Living partners with a small, deliberate set of stockists
+              who share our commitment to considered retail. If that sounds like
+              you, we&rsquo;d love to start the conversation.
             </p>
           </FadeIn>
         </div>
       </section>
 
       {/* Target audience */}
-      <section className="py-24 md:py-32 px-6 lg:px-10 bg-(--parchment)">
+      {/* <section className="py-24 md:py-32 px-6 lg:px-10 bg-(--parchment)">
         <div className="max-w-6xl mx-auto">
           <FadeIn>
             <div className="max-w-2xl mb-16">
@@ -150,7 +154,7 @@ export default function StockistPage() {
             </div>
           </FadeIn>
         </div>
-      </section>
+      </section> */}
 
       {/* Commercial advantage */}
       <section className="py-24 md:py-32 px-6 lg:px-10">
@@ -175,7 +179,9 @@ export default function StockistPage() {
                   <h3 className="font-display text-2xl text-(--charcoal) mb-3">
                     {a.title}
                   </h3>
-                  <p className="text-sm text-(--smoke) leading-relaxed">{a.body}</p>
+                  <p className="text-sm text-(--smoke) leading-relaxed">
+                    {a.body}
+                  </p>
                 </div>
               </FadeIn>
             ))}
@@ -203,7 +209,9 @@ export default function StockistPage() {
                   <h3 className="font-display text-2xl text-(--charcoal) mb-3">
                     {s.title}
                   </h3>
-                  <p className="text-sm text-(--smoke) leading-relaxed">{s.body}</p>
+                  <p className="text-sm text-(--smoke) leading-relaxed">
+                    {s.body}
+                  </p>
                 </div>
               </FadeIn>
             ))}

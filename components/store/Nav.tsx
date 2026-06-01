@@ -65,7 +65,7 @@ export default function Nav() {
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-24 grid grid-cols-3 items-center">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 md:h-24 grid grid-cols-3 items-center">
           {/* Left: links 1–3 on desktop, burger on mobile */}
           <div className="flex items-center">
             <button
@@ -105,8 +105,8 @@ export default function Nav() {
                 src={logo}
                 alt="Orika Living"
                 priority
-                sizes="(min-width: 768px) 200px, 140px"
-                className="h-12 md:h-16 w-auto"
+                sizes="(min-width: 768px) 200px, 120px"
+                className="h-9 md:h-16 w-auto"
               />
             </Link>
           </div>
@@ -152,7 +152,7 @@ export default function Nav() {
           role="dialog"
           aria-modal="true"
         >
-          <div className="h-24 shrink-0 grid grid-cols-3 items-center px-6">
+          <div className="h-16 shrink-0 grid grid-cols-3 items-center px-6">
             <div />
             <Link
               href="/"
@@ -163,8 +163,8 @@ export default function Nav() {
               <Image
                 src={logo}
                 alt="Orika Living"
-                sizes="140px"
-                className="h-12 w-auto"
+                sizes="120px"
+                className="h-9 w-auto"
               />
             </Link>
             <button

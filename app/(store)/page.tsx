@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { isApiImage } from "@/lib/utils/images";
-import heroProduct from "@/assets/images/orika product no bg.png";
+//import heroProduct from "@/assets/images/orika product no bg.png";
+import heroBanner from "@/assets/images/OrikaStyledImageWebBanner-1.jpg"
 import { getScents } from "@/lib/scents/server";
 import { getSignatures } from "@/lib/signatures/server";
 import { getFeaturedProducts } from "@/lib/products/server";
@@ -31,67 +32,64 @@ export default async function HomePage() {
       <OrikaLoader />
 
       {/* Hero */}
-      <section className="relative min-h-[90vh] overflow-hidden bg-(--linen)">
-        <div className="absolute inset-0 pointer-events-none">
-          <div
-            className="absolute -top-24 -right-20 w-152 h-152 rounded-full blur-3xl opacity-40"
-            style={{ background: "radial-gradient(circle, #D4AE5A 0%, transparent 60%)" }}
-          />
-          <div
-            className="absolute -bottom-32 -left-16 w-120 h-120 rounded-full blur-3xl opacity-30"
-            style={{ background: "radial-gradient(circle, #9B4A2E 0%, transparent 60%)" }}
-          />
-        </div>
+      <section className="relative min-h-[90vh] overflow-hidden">
+        {/* Background photograph */}
+        <Image
+          src={heroBanner}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        {/* Scrim — keeps text legible regardless of the underlying
+            photograph's contrast. Heavier in the middle where the headline
+            sits, softer at the edges to avoid a hard letterbox look. */}
+        <div className="absolute inset-0 pointer-events-none bg-black/30" />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.75) 100%)",
+          }}
+        />
 
-        {/* Text — left half on desktop, centred on mobile */}
-        <div className="relative z-10 min-h-[90vh] flex flex-col justify-center md:w-1/2 px-6 lg:px-16 py-24 text-center md:text-left">
+        <div className="relative z-10 min-h-[90vh] flex flex-col justify-center items-center px-6 lg:px-10 py-24 text-center">
           <FadeIn delay={0.1}>
-            <p className="text-[0.7rem] tracking-[0.5em] uppercase text-(--smoke) mb-6">
+            <p className="inline-block whitespace-nowrap bg-black/70 text-[0.6rem] sm:text-[0.7rem] tracking-[0.3em] sm:tracking-[0.5em] uppercase text-(--warm-white) px-4 py-2 mb-6 rounded-lg">
               Orika Living · Lagos, Nigeria
             </p>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-(--charcoal) leading-[0.95]">
+            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-(--warm-white) leading-[0.95]">
               Rooted in
               <br />
               <span className="italic">Nature</span>
             </h1>
           </FadeIn>
           <FadeIn delay={0.35}>
-            <p className="mt-8 text-base md:text-lg text-(--smoke) max-w-lg leading-relaxed">
-              Premium reed diffusers crafted to transform a room into an experience.
-              Six signature scents. One quiet ritual.
+            <p className="mt-8 text-base md:text-lg text-(--warm-white)/90 max-w-xl leading-relaxed">
+              Premium reed diffusers crafted to transform a room into an
+              experience. Six signature scents. One quiet ritual.
             </p>
           </FadeIn>
           <FadeIn delay={0.5}>
-            <div className="mt-12 flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-4">
+            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/products"
-                className="bg-(--charcoal) text-(--warm-white) px-10 py-4 text-xs tracking-[0.3em] uppercase hover:bg-(--ink) transition-colors"
+                className="bg-(--warm-white) text-(--charcoal) px-10 py-4 text-xs tracking-[0.3em] uppercase hover:bg-(--gold-light) transition-colors"
               >
                 Shop the Collection
               </Link>
               <Link
                 href="#scents"
-                className="text-[0.7rem] tracking-[0.3em] uppercase text-(--charcoal) gold-underline px-4 py-4"
+                className="text-[0.7rem] tracking-[0.3em] uppercase text-(--warm-white) gold-underline px-4 py-4"
               >
                 Discover the Scents
               </Link>
             </div>
           </FadeIn>
         </div>
-
-        {/* Product image — absolute right half, full height, desktop only */}
-        <FadeIn delay={0.3} className="hidden md:block absolute top-0 right-0 w-1/2 h-full">
-          <Image
-            src={heroProduct}
-            alt="Orika Living reed diffuser"
-            fill
-            priority
-            className="object-contain drop-shadow-2xl"
-            sizes="50vw"
-          />
-        </FadeIn>
       </section>
 
       {/* Brand overview */}
@@ -111,11 +109,11 @@ export default async function HomePage() {
             </p>
           </FadeIn>
           <FadeIn delay={0.25}>
-            <ul className="mt-12 flex flex-wrap justify-center gap-3">
+            <ul className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-2xl mx-auto">
               {brandDescriptors.map((d) => (
                 <li
                   key={d}
-                  className="border border-(--border) rounded-full px-5 py-2 text-[0.65rem] tracking-[0.35em] uppercase text-(--charcoal) bg-(--warm-white)"
+                  className="border border-(--border) rounded-full px-5 py-2 text-[0.65rem] tracking-[0.35em] uppercase text-(--charcoal) bg-(--warm-white) text-center"
                 >
                   {d}
                 </li>
@@ -126,7 +124,10 @@ export default async function HomePage() {
       </section>
 
       {/* Scent portfolio */}
-      <section id="scents" className="py-28 md:py-36 px-6 lg:px-10 bg-(--linen)">
+      <section
+        id="scents"
+        className="py-28 md:py-36 px-6 lg:px-10 bg-(--linen)"
+      >
         <div className="max-w-7xl mx-auto">
           <FadeIn>
             <div className="text-center mb-16 max-w-2xl mx-auto">
@@ -144,7 +145,7 @@ export default async function HomePage() {
             </div>
           </FadeIn>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {scents.map((scent, i) => (
               <FadeIn key={scent.slug} delay={i * 0.05}>
                 <ScentCard scent={scent} />
@@ -200,8 +201,8 @@ export default async function HomePage() {
                 Four formats. Every occasion.
               </h2>
               <p className="text-base text-(--smoke) leading-relaxed">
-                From flagship statement pieces to the compact car diffuser — Orika
-                scales with the space and the moment.
+                From flagship statement pieces to the compact car diffuser —
+                Orika scales with the space and the moment.
               </p>
             </div>
           </FadeIn>
@@ -232,7 +233,9 @@ export default async function HomePage() {
                     <p className="text-sm text-(--smoke) leading-relaxed flex-1">
                       {f.blurb}
                     </p>
-                    <p className="mt-6 text-base text-(--charcoal)">{f.price}</p>
+                    <p className="mt-6 text-base text-(--charcoal)">
+                      {f.price}
+                    </p>
                   </div>
                 </div>
               </FadeIn>
@@ -291,8 +294,9 @@ export default async function HomePage() {
                 displays, tester reeds, launch-night events and staff training.
               </p>
               <p className="text-base opacity-80 leading-relaxed mb-8">
-                Orika partners with stockists who share our commitment to considered
-                retail. If that sounds like you, we&rsquo;d love to talk.
+                Orika partners with stockists who share our commitment to
+                considered retail. If that sounds like you, we&rsquo;d love to
+                talk.
               </p>
               <Link
                 href="/stockist"
