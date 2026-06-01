@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { hasSeenNewsletter, markNewsletterSubscribed } from "@/lib/newsletter/suppression";
 import { useActionState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -10,7 +11,6 @@ import { subscribeAction } from "@/lib/newsletter/actions";
 import { initialSubscribeState } from "@/lib/newsletter/state";
 import logo from "@/assets/images/orikaLogo.png";
 
-const STORAGE_KEY = "orika.newsletter.seen.v1";
 const TRIGGER_DELAY_MS = 8000;
 
 // Routes where the popup is suppressed regardless of state — purchase and
@@ -31,15 +31,7 @@ export default function NewsletterPopup() {
   // dismissed, or we're on a focus-mode page.
   useEffect(() => {
     if (suppressed) return;
-    let already = false;
-    try {
-      already = Boolean(localStorage.getItem(STORAGE_KEY));
-    } catch {
-      // localStorage unavailable (private mode, embedded webview) — don't
-      // pop up. Fail closed: better to skip than nag.
-      return;
-    }
-    if (already) return;
+    if (hasSeenNewsletter()) return;
     const timer = setTimeout(() => setOpen(true), TRIGGER_DELAY_MS);
     return () => clearTimeout(timer);
   }, [suppressed]);
@@ -48,7 +40,7 @@ export default function NewsletterPopup() {
   // again, and auto-close after a moment so the user reads the success.
   useEffect(() => {
     if (state.status !== "success") return;
-    markSubscribed();
+    markNewsletterSubscribed();
     const timer = setTimeout(() => setOpen(false), 2500);
     return () => clearTimeout(timer);
   }, [state.status]);
@@ -156,13 +148,3 @@ export default function NewsletterPopup() {
   );
 }
 
-function markSubscribed() {
-  try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ status: "subscribed", at: Date.now() }),
-    );
-  } catch {
-    // Quota exceeded or storage unavailable — best effort.
-  }
-}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { subscribeAction } from "@/lib/newsletter/actions";
 import { initialSubscribeState } from "@/lib/newsletter/state";
+import { markNewsletterSubscribed } from "@/lib/newsletter/suppression";
 
 interface Props {
   source?: string;
@@ -15,6 +16,12 @@ export default function NewsletterForm({ source = "footer", tone = "dark" }: Pro
     initialSubscribeState,
   );
   const isDark = tone === "dark";
+
+  // Subscribing via the footer should also stop the popup on this device —
+  // otherwise a footer subscriber keeps getting nagged by the popup.
+  useEffect(() => {
+    if (state.status === "success") markNewsletterSubscribed();
+  }, [state.status]);
 
   if (state.status === "success") {
     return (
