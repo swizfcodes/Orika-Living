@@ -19,8 +19,7 @@ const jost = Jost({
   display: "swap",
 });
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://orikaliving.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://orikaliving.com";
 
 const OG_TITLE = "Orika Living — Premium Reed Diffusers Crafted in Lagos";
 const OG_DESCRIPTION =

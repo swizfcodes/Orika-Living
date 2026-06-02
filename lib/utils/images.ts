@@ -2,7 +2,10 @@ import type { Product } from "@/lib/types";
 
 // The API base, e.g. http://localhost:7000/api — strip the trailing
 // "/api" to get the origin we prefix document-image paths with.
-const API_ORIGIN = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/api\/?$/, "");
+const API_ORIGIN = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(
+  /\/api\/?$/,
+  "",
+);
 
 /**
  * Resolve an image reference into a loadable absolute URL, or null.
@@ -25,7 +28,9 @@ export function resolveImageUrl(ref: string | null | undefined): string | null {
  * Images come from the ERP product gallery as /api/documents/{id}/image
  * paths (resolved here), or legacy absolute URLs.
  */
-export function getProductImage(product: Pick<Product, "images">): string | null {
+export function getProductImage(
+  product: Pick<Product, "images">,
+): string | null {
   return resolveImageUrl(product.images?.[0]);
 }
 

@@ -2,8 +2,7 @@ import type { MetadataRoute } from "next";
 import { getActiveProducts } from "@/lib/products/server";
 import { getScents } from "@/lib/scents/server";
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://orikaliving.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://orikaliving.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();

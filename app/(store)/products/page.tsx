@@ -8,10 +8,7 @@ interface PageProps {
 
 export default async function ProductsPage({ searchParams }: PageProps) {
   const { scent } = await searchParams;
-  const [catalogue, scents] = await Promise.all([
-    getCatalogue(),
-    getScents(),
-  ]);
+  const [catalogue, scents] = await Promise.all([getCatalogue(), getScents()]);
 
   return (
     <ProductsBrowser

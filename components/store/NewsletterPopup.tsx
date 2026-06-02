@@ -2,7 +2,10 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { hasSeenNewsletter, markNewsletterSubscribed } from "@/lib/newsletter/suppression";
+import {
+  hasSeenNewsletter,
+  markNewsletterSubscribed,
+} from "@/lib/newsletter/suppression";
 import { useActionState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -147,4 +150,3 @@ export default function NewsletterPopup() {
     </AnimatePresence>
   );
 }
-

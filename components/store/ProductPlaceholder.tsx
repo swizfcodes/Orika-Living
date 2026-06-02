@@ -28,7 +28,10 @@ export default function ProductPlaceholder({ family, name, className }: Props) {
         <span className="font-display italic text-3xl md:text-4xl mt-4 leading-tight">
           {name}
         </span>
-        <span className="mt-6 w-10 h-px" style={{ backgroundColor: ink, opacity: 0.4 }} />
+        <span
+          className="mt-6 w-10 h-px"
+          style={{ backgroundColor: ink, opacity: 0.4 }}
+        />
         <span className="text-[0.6rem] tracking-[0.35em] uppercase mt-4 opacity-60">
           {family}
         </span>

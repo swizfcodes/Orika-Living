@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { isApiImage } from "@/lib/utils/images";
 //import heroProduct from "@/assets/images/orika product no bg.png";
-import heroBanner from "@/assets/images/OrikaStyledImageWebBanner-1.jpg"
+import heroBanner from "@/assets/images/OrikaStyledImageWebBanner-1.jpg";
 import { getScents } from "@/lib/scents/server";
 import { getSignatures } from "@/lib/signatures/server";
 import { getFeaturedProducts } from "@/lib/products/server";

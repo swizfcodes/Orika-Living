@@ -27,8 +27,8 @@ interface ListResponse {
 // getActiveProducts (below) still returns a plain Product[] for callers
 // like the sitemap that don't care about the distinction.
 export type CatalogueResult =
-  | { status: "ok"; products: Product[] }      // succeeded — products may be []
-  | { status: "error"; products: Product[] };  // fetch/parse failed — products is []
+  | { status: "ok"; products: Product[] } // succeeded — products may be []
+  | { status: "error"; products: Product[] }; // fetch/parse failed — products is []
 
 export async function getCatalogue(): Promise<CatalogueResult> {
   try {

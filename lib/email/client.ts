@@ -38,7 +38,10 @@ export async function send(
 ): Promise<{ ok: boolean; id?: string }> {
   const resend = getResend();
   if (!resend) {
-    console.warn("[email] RESEND_API_KEY missing — skipping send:", opts.subject);
+    console.warn(
+      "[email] RESEND_API_KEY missing — skipping send:",
+      opts.subject,
+    );
     return { ok: false };
   }
   try {

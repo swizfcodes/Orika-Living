@@ -1,56 +1,56 @@
 @import "tailwindcss";
 
 :root {
-    --font-cormorant: "Cormorant Garamond", serif;
-    --font-jost: "Jost", sans-serif;
+  --font-cormorant: "Cormorant Garamond", serif;
+  --font-jost: "Jost", sans-serif;
 
-    --linen: #f2ede4;
-    --parchment: #ede6db;
-    --warm-white: #faf8f4;
-    --charcoal: #2b2820;
-    --ink: #1c1a16;
-    --gold: #b8922a;
-    --gold-light: #d4ae5a;
-    --smoke: #7a756c;
-    --mist: #c8c2b8;
-    --border: rgba(43, 40, 32, 0.1);
+  --linen: #f2ede4;
+  --parchment: #ede6db;
+  --warm-white: #faf8f4;
+  --charcoal: #2b2820;
+  --ink: #1c1a16;
+  --gold: #b8922a;
+  --gold-light: #d4ae5a;
+  --smoke: #7a756c;
+  --mist: #c8c2b8;
+  --border: rgba(43, 40, 32, 0.1);
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 body {
-    font-family: var(--font-jost);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-jost);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .font-display {
-    font-family: var(--font-cormorant);
+  font-family: var(--font-cormorant);
 }
 
 /* Gold underline animation */
 .gold-underline {
-    position: relative;
+  position: relative;
 }
 
 .gold-underline::after {
-    content: "";
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--gold);
-    transition: width 0.3s ease;
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width 0.3s ease;
 }
 
 .gold-underline:hover::after,
 .gold-underline.is-active::after {
-    width: 100%;
+  width: 100%;
 }

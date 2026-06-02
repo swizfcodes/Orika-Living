@@ -48,7 +48,9 @@ export default function AddToCart({ product }: Props) {
         >
           −
         </button>
-        <span className="w-10 text-center text-sm text-(--charcoal)">{qty}</span>
+        <span className="w-10 text-center text-sm text-(--charcoal)">
+          {qty}
+        </span>
         <button
           type="button"
           onClick={() => setQty((q) => q + 1)}

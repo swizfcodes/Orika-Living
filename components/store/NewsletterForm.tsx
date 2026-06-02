@@ -10,7 +10,10 @@ interface Props {
   tone?: "light" | "dark";
 }
 
-export default function NewsletterForm({ source = "footer", tone = "dark" }: Props) {
+export default function NewsletterForm({
+  source = "footer",
+  tone = "dark",
+}: Props) {
   const [state, formAction, pending] = useActionState(
     subscribeAction,
     initialSubscribeState,
@@ -61,7 +64,9 @@ export default function NewsletterForm({ source = "footer", tone = "dark" }: Pro
           type="submit"
           disabled={pending}
           className={`text-[0.6rem] tracking-[0.3em] uppercase px-3 py-2 disabled:opacity-50 transition-colors ${
-            isDark ? "text-(--gold-light) hover:text-white" : "text-(--gold) hover:text-(--charcoal)"
+            isDark
+              ? "text-(--gold-light) hover:text-white"
+              : "text-(--gold) hover:text-(--charcoal)"
           }`}
         >
           {pending ? "…" : "Subscribe"}

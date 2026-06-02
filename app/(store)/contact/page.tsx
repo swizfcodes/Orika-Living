@@ -38,7 +38,9 @@ export default function ContactPage() {
                 <div className="space-y-5">
                   {CONTACTS.map((c) => (
                     <div key={c.email}>
-                      <p className="font-display text-xl text-(--charcoal)">{c.name}</p>
+                      <p className="font-display text-xl text-(--charcoal)">
+                        {c.name}
+                      </p>
                       <p className="text-[0.6rem] tracking-[0.3em] uppercase text-(--smoke) mt-1 mb-1">
                         {c.role}
                       </p>

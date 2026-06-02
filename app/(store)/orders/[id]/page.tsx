@@ -17,7 +17,10 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function OrderSuccessPage({ params, searchParams }: PageProps) {
+export default async function OrderSuccessPage({
+  params,
+  searchParams,
+}: PageProps) {
   const [{ id }, { ref, pending: pendingFlag }] = await Promise.all([
     params,
     searchParams,
@@ -36,16 +39,24 @@ export default async function OrderSuccessPage({ params, searchParams }: PagePro
     notFound();
   }
 
-  const isPaid = order.status === "paid" || order.status === "processing" ||
-    order.status === "shipped" || order.status === "delivered";
-  const isPending = !isPaid && (pendingFlag === "1" || order.status === "pending");
+  const isPaid =
+    order.status === "paid" ||
+    order.status === "processing" ||
+    order.status === "shipped" ||
+    order.status === "delivered";
+  const isPending =
+    !isPaid && (pendingFlag === "1" || order.status === "pending");
 
   return (
     <section className="max-w-3xl mx-auto px-6 lg:px-10 py-20 md:py-28">
       <FadeIn>
         <div className="text-center mb-14">
           <p className="text-[0.7rem] tracking-[0.4em] uppercase text-(--smoke) mb-5">
-            {isPaid ? "Order Confirmed" : isPending ? "Confirming Payment" : "Order"}
+            {isPaid
+              ? "Order Confirmed"
+              : isPending
+                ? "Confirming Payment"
+                : "Order"}
           </p>
           <h1 className="font-display text-5xl md:text-6xl text-(--charcoal) leading-[1.05]">
             {isPaid
@@ -57,20 +68,31 @@ export default async function OrderSuccessPage({ params, searchParams }: PagePro
           <p className="mt-6 text-base text-(--smoke) max-w-xl mx-auto leading-relaxed">
             {isPaid ? (
               <>
-                Your order is on its way through our fulfilment team. A confirmation
-                has been sent to{" "}
-                <span className="text-(--charcoal)">{order.delivery_address.email}</span>.
+                Your order is on its way through our fulfilment team. A
+                confirmation has been sent to{" "}
+                <span className="text-(--charcoal)">
+                  {order.delivery_address.email}
+                </span>
+                .
               </>
             ) : isPending ? (
               <>
                 Paystack is still confirming your payment — this usually takes a
-                few seconds. You can safely leave this page; we&rsquo;ll email you
-                at{" "}
-                <span className="text-(--charcoal)">{order.delivery_address.email}</span>{" "}
+                few seconds. You can safely leave this page; we&rsquo;ll email
+                you at{" "}
+                <span className="text-(--charcoal)">
+                  {order.delivery_address.email}
+                </span>{" "}
                 as soon as it&rsquo;s settled.
               </>
             ) : (
-              <>We&rsquo;ll be in touch at <span className="text-(--charcoal)">{order.delivery_address.email}</span>.</>
+              <>
+                We&rsquo;ll be in touch at{" "}
+                <span className="text-(--charcoal)">
+                  {order.delivery_address.email}
+                </span>
+                .
+              </>
             )}
           </p>
         </div>
@@ -91,7 +113,9 @@ export default async function OrderSuccessPage({ params, searchParams }: PagePro
               <p className="text-[0.6rem] tracking-[0.35em] uppercase text-(--smoke) mb-2">
                 Status
               </p>
-              <p className="text-sm text-(--charcoal) capitalize">{order.status}</p>
+              <p className="text-sm text-(--charcoal) capitalize">
+                {order.status}
+              </p>
             </div>
           </div>
 

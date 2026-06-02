@@ -36,7 +36,11 @@ function read(): CheckoutDetails {
   if (typeof window === "undefined") return EMPTY;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) { _cacheKey = null; _cached = EMPTY; return EMPTY; }
+    if (!raw) {
+      _cacheKey = null;
+      _cached = EMPTY;
+      return EMPTY;
+    }
     if (raw === _cacheKey) return _cached;
     const parsed = JSON.parse(raw) as Partial<CheckoutDetails>;
     _cacheKey = raw;
@@ -50,7 +54,9 @@ function read(): CheckoutDetails {
     };
     return _cached;
   } catch {
-    _cacheKey = null; _cached = EMPTY; return EMPTY;
+    _cacheKey = null;
+    _cached = EMPTY;
+    return EMPTY;
   }
 }
 
@@ -73,7 +79,11 @@ export function useCheckoutDetails() {
   const details = useSyncExternalStore(subscribe, read, () => EMPTY);
   // loaded: false on the server, true on the client — drives form remount
   // so uncontrolled inputs pick up their prefilled defaultValues.
-  const loaded = useSyncExternalStore(() => () => {}, () => true, () => false);
+  const loaded = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   const save = (next: CheckoutDetails) => {
     if (typeof window !== "undefined") {

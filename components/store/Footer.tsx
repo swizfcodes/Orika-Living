@@ -33,27 +33,42 @@ export default function Footer() {
           </p>
           <ul className="space-y-3 text-sm">
             <li>
-              <Link href="/products" className="hover:text-(--gold-light) transition-colors">
+              <Link
+                href="/products"
+                className="hover:text-(--gold-light) transition-colors"
+              >
                 Collection
               </Link>
             </li>
             <li>
-              <Link href="/#scents" className="hover:text-(--gold-light) transition-colors">
+              <Link
+                href="/#scents"
+                className="hover:text-(--gold-light) transition-colors"
+              >
                 Signature Scents
               </Link>
             </li>
             <li>
-              <Link href="/#vision" className="hover:text-(--gold-light) transition-colors">
+              <Link
+                href="/#vision"
+                className="hover:text-(--gold-light) transition-colors"
+              >
                 Our Vision
               </Link>
             </li>
             <li>
-              <Link href="/stockist" className="hover:text-(--gold-light) transition-colors">
+              <Link
+                href="/stockist"
+                className="hover:text-(--gold-light) transition-colors"
+              >
                 Become a Stockist
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="hover:text-(--gold-light) transition-colors">
+              <Link
+                href="/contact"
+                className="hover:text-(--gold-light) transition-colors"
+              >
                 Contact
               </Link>
             </li>

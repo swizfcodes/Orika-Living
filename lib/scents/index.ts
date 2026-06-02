@@ -133,7 +133,6 @@ export const formats = [
     name: "Car Diffuser",
     size: "8ml",
     price: "₦6,500",
-    blurb:
-      "Scent beyond the home — a compact companion for the drive.",
+    blurb: "Scent beyond the home — a compact companion for the drive.",
   },
 ] as const;

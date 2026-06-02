@@ -55,7 +55,15 @@ export default function CartDrawer() {
                 className="text-(--smoke) hover:text-(--charcoal) transition-colors"
                 aria-label="Close cart"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                >
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
@@ -111,7 +119,9 @@ export default function CartDrawer() {
                           </div>
                           <button
                             type="button"
-                            onClick={() => dispatch(removeItem(item.product_id))}
+                            onClick={() =>
+                              dispatch(removeItem(item.product_id))
+                            }
                             className="text-(--smoke) hover:text-(--charcoal) text-[0.6rem] tracking-[0.3em] uppercase shrink-0"
                             aria-label={`Remove ${item.name}`}
                           >

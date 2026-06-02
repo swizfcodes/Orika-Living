@@ -33,7 +33,8 @@ export default function CheckoutPage() {
   const { details, loaded, save, clear } = useCheckoutDetails();
 
   const checkoutItems = useMemo(
-    () => items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
+    () =>
+      items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
     [items],
   );
 
@@ -77,7 +78,8 @@ export default function CheckoutPage() {
     const errors: FieldErrors = {};
     if (address.full_name.length < 2) errors.full_name = "Required";
     if (address.phone.length < 10) errors.phone = "Enter a valid phone";
-    if (!/^\S+@\S+\.\S+$/.test(address.email)) errors.email = "Enter a valid email";
+    if (!/^\S+@\S+\.\S+$/.test(address.email))
+      errors.email = "Enter a valid email";
     if (address.street.length < 5) errors.street = "Required";
     if (address.city.length < 2) errors.city = "Required";
     if (address.state.length < 2) errors.state = "Required";
@@ -129,14 +131,20 @@ export default function CheckoutPage() {
               clear();
               router.push(`/orders/${result.order_id}?ref=${reference}`);
             } else {
-              router.push(`/orders/${result.order_id}?ref=${reference}&pending=1`);
+              router.push(
+                `/orders/${result.order_id}?ref=${reference}&pending=1`,
+              );
             }
           } catch {
-            router.push(`/orders/${result.order_id}?ref=${reference}&pending=1`);
+            router.push(
+              `/orders/${result.order_id}?ref=${reference}&pending=1`,
+            );
           }
         },
         onCancel: () => {
-          setFormError("Payment was cancelled. You can retry whenever you're ready.");
+          setFormError(
+            "Payment was cancelled. You can retry whenever you're ready.",
+          );
         },
       });
     });
@@ -156,7 +164,11 @@ export default function CheckoutPage() {
       </FadeIn>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-16 items-start">
-        <form key={loaded ? "loaded" : "empty"} action={onSubmit} className="space-y-8">
+        <form
+          key={loaded ? "loaded" : "empty"}
+          action={onSubmit}
+          className="space-y-8"
+        >
           <div>
             <p className="text-[0.65rem] tracking-[0.35em] uppercase text-(--smoke) mb-6">
               Contact
@@ -251,7 +263,10 @@ export default function CheckoutPage() {
           </p>
           <ul className="space-y-5">
             {items.map((item) => (
-              <li key={item.product_id} className="flex items-start justify-between gap-4">
+              <li
+                key={item.product_id}
+                className="flex items-start justify-between gap-4"
+              >
                 <div className="min-w-0">
                   <p className="font-display text-lg text-(--charcoal) leading-tight">
                     {item.name}
@@ -340,7 +355,9 @@ function Row({
   return (
     <div className="flex items-center justify-between text-sm">
       <span className="text-(--smoke)">{label}</span>
-      <span className={muted ? "text-(--smoke)" : "text-(--charcoal)"}>{value}</span>
+      <span className={muted ? "text-(--smoke)" : "text-(--charcoal)"}>
+        {value}
+      </span>
     </div>
   );
 }

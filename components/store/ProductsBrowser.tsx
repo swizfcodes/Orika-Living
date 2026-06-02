@@ -47,7 +47,7 @@ export default function ProductsBrowser({
     () =>
       family === "All"
         ? null
-        : scents.find((s) => s.family === family) ?? null,
+        : (scents.find((s) => s.family === family) ?? null),
     [family, scents],
   );
 
@@ -124,7 +124,8 @@ export default function ProductsBrowser({
           />
         )}
 
-        {(activeScent?.image || (!activeScent && carouselScents.length > 0)) && (
+        {(activeScent?.image ||
+          (!activeScent && carouselScents.length > 0)) && (
           <div
             className="absolute inset-0"
             style={{
@@ -194,9 +195,7 @@ export default function ProductsBrowser({
                 style={{
                   width: i === carouselIndex ? "2rem" : "0.75rem",
                   backgroundColor:
-                    i === carouselIndex
-                      ? "#F2EDE4"
-                      : "rgba(242,237,228,0.5)",
+                    i === carouselIndex ? "#F2EDE4" : "rgba(242,237,228,0.5)",
                 }}
               />
             ))}
@@ -206,7 +205,10 @@ export default function ProductsBrowser({
 
       <section className="px-6 lg:px-10 py-12">
         <div className="max-w-7xl mx-auto">
-          <div id="catalogue-filters" className="flex flex-col gap-6 mb-14 pb-6 border-b border-(--border)">
+          <div
+            id="catalogue-filters"
+            className="flex flex-col gap-6 mb-14 pb-6 border-b border-(--border)"
+          >
             <FilterRow
               label="Scent"
               options={["All", ...scents.map((s) => s.family)]}

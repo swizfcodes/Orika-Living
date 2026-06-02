@@ -9,17 +9,17 @@ The backend (`hub-system`) work is done separately.
 
 Drop these into the Orika-Living repo at the matching paths:
 
-| File | Action |
-|------|--------|
-| `lib/api/client.ts` | **NEW** — the HTTP client for the hub API |
-| `lib/products/server.ts` | replace |
-| `lib/scents/server.ts` | replace |
-| `lib/signatures/server.ts` | replace |
-| `lib/checkout/actions.ts` | replace |
-| `lib/newsletter/actions.ts` | replace |
-| `lib/enquiries/actions.ts` | replace |
-| `app/api/paystack/verify/route.ts` | replace |
-| `app/(store)/orders/[id]/page.tsx` | replace |
+| File                               | Action                                    |
+| ---------------------------------- | ----------------------------------------- |
+| `lib/api/client.ts`                | **NEW** — the HTTP client for the hub API |
+| `lib/products/server.ts`           | replace                                   |
+| `lib/scents/server.ts`             | replace                                   |
+| `lib/signatures/server.ts`         | replace                                   |
+| `lib/checkout/actions.ts`          | replace                                   |
+| `lib/newsletter/actions.ts`        | replace                                   |
+| `lib/enquiries/actions.ts`         | replace                                   |
+| `app/api/paystack/verify/route.ts` | replace                                   |
+| `app/(store)/orders/[id]/page.tsx` | replace                                   |
 
 ---
 
@@ -29,6 +29,7 @@ Because the **storefront admin was discarded** (all storefront
 management now happens in the ERP), the entire admin surface goes.
 
 ### Supabase plumbing (no longer used)
+
 ```
 lib/supabase/admin.ts
 lib/supabase/client.ts
@@ -38,6 +39,7 @@ lib/ratelimit.ts                 (rate limiting moved to the backend)
 ```
 
 ### Storefront admin — entire surface removed
+
 ```
 lib/admin/auth.ts
 lib/admin/orders.ts
@@ -52,14 +54,17 @@ app/api/auth/callback/route.ts   (Supabase OAuth callback)
 ```
 
 ### Paystack — fulfilment moved to the backend
+
 ```
 lib/paystack/fulfil.ts           (the backend now fulfils orders)
 app/api/paystack/webhook/route.ts (the backend receives the webhook)
 ```
+
 Keep `lib/paystack/verify.ts` ONLY if something else imports it;
 the new `verify/route.ts` no longer needs it.
 
 ### Supabase folder + migrations
+
 ```
 supabase/                        (entire folder)
 ```
@@ -69,6 +74,7 @@ supabase/                        (entire folder)
 ## 3. Remove Supabase packages
 
 After the deletions above, nothing imports Supabase. Remove it:
+
 ```bash
 npm uninstall @supabase/ssr @supabase/supabase-js
 ```
@@ -78,6 +84,7 @@ npm uninstall @supabase/ssr @supabase/supabase-js
 ## 4. Environment variables
 
 **.env.local (development):**
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:7000/api
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
@@ -85,6 +92,7 @@ NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_test_xxx
 ```
 
 **.env.production (VPS):**
+
 ```env
 NEXT_PUBLIC_API_URL=https://app.orikaliving.com/api
 NEXT_PUBLIC_SITE_URL=https://orikaliving.com

@@ -44,9 +44,7 @@ export default function ScentCard({ scent }: Props) {
           <p
             className="text-[0.55rem] sm:text-[0.6rem] tracking-[0.25em] sm:tracking-[0.35em] uppercase opacity-90 whitespace-nowrap"
             style={
-              hasImage
-                ? { textShadow: "0 1px 4px rgba(0,0,0,0.6)" }
-                : undefined
+              hasImage ? { textShadow: "0 1px 4px rgba(0,0,0,0.6)" } : undefined
             }
           >
             {scent.family}
@@ -57,9 +55,7 @@ export default function ScentCard({ scent }: Props) {
           <h3
             className="font-display text-xl sm:text-3xl md:text-4xl leading-tight whitespace-nowrap"
             style={
-              hasImage
-                ? { textShadow: "0 2px 8px rgba(0,0,0,0.5)" }
-                : undefined
+              hasImage ? { textShadow: "0 2px 8px rgba(0,0,0,0.5)" } : undefined
             }
           >
             {scent.name}
@@ -67,9 +63,7 @@ export default function ScentCard({ scent }: Props) {
           <p
             className="mt-2 sm:mt-3 text-xs sm:text-sm italic opacity-95 leading-snug"
             style={
-              hasImage
-                ? { textShadow: "0 1px 4px rgba(0,0,0,0.6)" }
-                : undefined
+              hasImage ? { textShadow: "0 1px 4px rgba(0,0,0,0.6)" } : undefined
             }
           >
             {scent.tagline}
@@ -81,9 +75,7 @@ export default function ScentCard({ scent }: Props) {
           <p
             className="mt-3 sm:mt-4 text-[0.55rem] sm:text-[0.65rem] tracking-[0.25em] sm:tracking-[0.35em] uppercase opacity-90 whitespace-nowrap"
             style={
-              hasImage
-                ? { textShadow: "0 1px 4px rgba(0,0,0,0.6)" }
-                : undefined
+              hasImage ? { textShadow: "0 1px 4px rgba(0,0,0,0.6)" } : undefined
             }
           >
             Explore →

@@ -4,10 +4,7 @@ import { notFound } from "next/navigation";
 import { fromKobo } from "@/lib/types";
 import { getProductImage, isApiImage } from "@/lib/utils/images";
 import { getScents } from "@/lib/scents/server";
-import {
-  getProductBySlug,
-  getRelatedProducts,
-} from "@/lib/products/server";
+import { getProductBySlug, getRelatedProducts } from "@/lib/products/server";
 import AddToCart from "@/components/store/AddToCart";
 import ProductCard from "@/components/store/ProductCard";
 import ProductPlaceholder from "@/components/store/ProductPlaceholder";
@@ -43,9 +40,13 @@ export default async function ProductDetailPage({ params }: PageProps) {
     <>
       <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-10">
         <nav className="text-[0.65rem] tracking-[0.3em] uppercase text-(--smoke) flex gap-3 flex-wrap">
-          <Link href="/" className="hover:text-(--charcoal)">Home</Link>
+          <Link href="/" className="hover:text-(--charcoal)">
+            Home
+          </Link>
           <span>/</span>
-          <Link href="/products" className="hover:text-(--charcoal)">Collection</Link>
+          <Link href="/products" className="hover:text-(--charcoal)">
+            Collection
+          </Link>
           <span>/</span>
           <span className="text-(--charcoal)">{product.name}</span>
         </nav>

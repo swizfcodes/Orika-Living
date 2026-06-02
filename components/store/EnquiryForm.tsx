@@ -44,7 +44,9 @@ export default function EnquiryForm({
     return (
       <div
         className={`p-10 text-center ${
-          isDark ? "bg-white/5 border border-white/10 text-(--warm-white)" : "bg-(--linen)"
+          isDark
+            ? "bg-white/5 border border-white/10 text-(--warm-white)"
+            : "bg-(--linen)"
         }`}
         role="status"
       >
@@ -55,9 +57,7 @@ export default function EnquiryForm({
         >
           Received
         </p>
-        <p className="font-display text-3xl leading-tight mb-3">
-          Thank you.
-        </p>
+        <p className="font-display text-3xl leading-tight mb-3">Thank you.</p>
         <p className={`text-sm ${isDark ? "opacity-80" : "text-(--smoke)"}`}>
           {state.message}
         </p>
@@ -68,7 +68,11 @@ export default function EnquiryForm({
   return (
     <form action={formAction} className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <FieldWrapper label="Name" error={state.fieldErrors?.name} labelClass={label}>
+        <FieldWrapper
+          label="Name"
+          error={state.fieldErrors?.name}
+          labelClass={label}
+        >
           <input
             name="name"
             type="text"
@@ -79,7 +83,11 @@ export default function EnquiryForm({
             className={input}
           />
         </FieldWrapper>
-        <FieldWrapper label="Email" error={state.fieldErrors?.email} labelClass={label}>
+        <FieldWrapper
+          label="Email"
+          error={state.fieldErrors?.email}
+          labelClass={label}
+        >
           <input
             name="email"
             type="email"
@@ -92,7 +100,11 @@ export default function EnquiryForm({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <FieldWrapper label="Phone" error={state.fieldErrors?.phone} labelClass={label}>
+        <FieldWrapper
+          label="Phone"
+          error={state.fieldErrors?.phone}
+          labelClass={label}
+        >
           <input
             name="phone"
             type="tel"
@@ -107,7 +119,11 @@ export default function EnquiryForm({
         {hideTypeSelect ? (
           <input type="hidden" name="type" value={defaultType} />
         ) : (
-          <FieldWrapper label="Enquiry Type" error={state.fieldErrors?.type} labelClass={label}>
+          <FieldWrapper
+            label="Enquiry Type"
+            error={state.fieldErrors?.type}
+            labelClass={label}
+          >
             <select
               name="type"
               defaultValue={defaultType}
@@ -126,7 +142,11 @@ export default function EnquiryForm({
         )}
       </div>
 
-      <FieldWrapper label="Message" error={state.fieldErrors?.message} labelClass={label}>
+      <FieldWrapper
+        label="Message"
+        error={state.fieldErrors?.message}
+        labelClass={label}
+      >
         <textarea
           name="message"
           rows={5}
@@ -138,7 +158,10 @@ export default function EnquiryForm({
       </FieldWrapper>
 
       {state.status === "error" && !state.fieldErrors && (
-        <p role="alert" className="text-sm text-red-800 bg-red-50 border border-red-100 px-4 py-3">
+        <p
+          role="alert"
+          className="text-sm text-red-800 bg-red-50 border border-red-100 px-4 py-3"
+        >
           {state.message}
         </p>
       )}

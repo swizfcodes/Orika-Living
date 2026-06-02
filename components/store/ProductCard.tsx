@@ -15,10 +15,7 @@ export default function ProductCard({ product, priority }: Props) {
   const soldOut = !product.in_stock || product.stock_qty <= 0;
 
   return (
-    <Link
-      href={`/products/${product.slug}`}
-      className="group block"
-    >
+    <Link href={`/products/${product.slug}`} className="group block">
       <div className="relative aspect-[4/5] overflow-hidden bg-(--parchment) mb-5">
         {image ? (
           <Image

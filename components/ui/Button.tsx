@@ -8,8 +8,7 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary: "bg-(--charcoal) text-(--warm-white) hover:bg-(--ink)",
-  ghost:
-    "bg-transparent text-(--charcoal) hover:text-(--gold)",
+  ghost: "bg-transparent text-(--charcoal) hover:text-(--gold)",
   outline:
     "border border-(--charcoal) text-(--charcoal) hover:bg-(--charcoal) hover:text-(--warm-white)",
 };
@@ -20,7 +19,8 @@ interface BaseProps {
   children: ReactNode;
 }
 
-type ButtonAsButton = BaseProps & ComponentProps<"button"> & { href?: undefined };
+type ButtonAsButton = BaseProps &
+  ComponentProps<"button"> & { href?: undefined };
 type ButtonAsLink = BaseProps & { href: string } & Omit<
     ComponentProps<typeof Link>,
     "href" | "className" | "children"
@@ -39,8 +39,13 @@ export default function Button(props: ButtonAsButton | ButtonAsLink) {
     );
   }
 
-  const { variant: _v, className: _c, children: _ch, href: _h, ...rest } =
-    props as ButtonAsButton;
+  const {
+    variant: _v,
+    className: _c,
+    children: _ch,
+    href: _h,
+    ...rest
+  } = props as ButtonAsButton;
   return (
     <button className={classes} {...rest}>
       {children}
