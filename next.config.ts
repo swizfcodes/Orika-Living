@@ -51,7 +51,7 @@ const nextConfig: NextConfig = {
               `script-src ${scriptSrc}`,
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' blob: http://localhost:7000 https://*.supabase.co https://*.paystack.co https://*.paystack.com",
+              `img-src 'self' blob: http://localhost:7000 ${process.env.NEXT_PUBLIC_IMAGE_HOST ? `https://${process.env.NEXT_PUBLIC_IMAGE_HOST}` : ""} https://app.orikaliving.com https://*.supabase.co https://*.paystack.co https://*.paystack.com`,
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.paystack.co https://checkout.paystack.com",
               "frame-src https://js.paystack.co https://checkout.paystack.com https://standard.paystack.co",
             ].join("; "),

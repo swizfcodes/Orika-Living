@@ -29,6 +29,6 @@ jobs:
 
             npm run build
 
-            pm2 restart orika-living || pm2 start npm --name "orika-living" -- start -- -p 3001
+            pm2 restart Orika-Living || pm2 start npm --name "Orika-Living" -- start -- -p 3001
 
             pm2 save
