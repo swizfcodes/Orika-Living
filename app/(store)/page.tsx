@@ -6,6 +6,7 @@ import heroBanner from "@/assets/images/OrikaStyledImageWebBanner-1.jpg";
 import { getScents } from "@/lib/scents/server";
 import { getSignatures } from "@/lib/signatures/server";
 import { getFeaturedProducts } from "@/lib/products/server";
+import { getStoreSettings } from "@/lib/settings/server";
 import FadeIn from "@/components/motion/FadeIn";
 import ProductCard from "@/components/store/ProductCard";
 import ScentCard from "@/components/store/ScentCard";
@@ -21,11 +22,17 @@ const brandDescriptors = [
 ];
 
 export default async function HomePage() {
-  const [featured, scents, signatures] = await Promise.all([
+  const [featured, scents, signatures, settings] = await Promise.all([
     getFeaturedProducts("Signature Edition", 3),
     getScents(),
     getSignatures(),
+    getStoreSettings(),
   ]);
+
+  // Hero background: an admin-uploaded image (resolved absolute URL) when
+  // set, otherwise the bundled banner. next/image accepts both a string
+  // URL and a static import for `src`.
+  const heroSrc = settings.heroImage ?? heroBanner;
 
   return (
     <>
@@ -35,11 +42,12 @@ export default async function HomePage() {
       <section className="relative min-h-[90vh] overflow-hidden">
         {/* Background photograph */}
         <Image
-          src={heroBanner}
+          src={heroSrc}
           alt=""
           fill
           priority
           sizes="100vw"
+          unoptimized={typeof heroSrc === "string" && isApiImage(heroSrc)}
           className="object-cover"
         />
         {/* Scrim — keeps text legible regardless of the underlying
@@ -57,20 +65,19 @@ export default async function HomePage() {
         <div className="relative z-10 min-h-[90vh] flex flex-col justify-center items-center px-6 lg:px-10 py-24 text-center">
           <FadeIn delay={0.1}>
             <p className="inline-block whitespace-nowrap bg-black/70 text-[0.6rem] sm:text-[0.7rem] tracking-[0.3em] sm:tracking-[0.5em] uppercase text-(--warm-white) px-4 py-2 mb-6 rounded-lg">
-              Orika Living · Lagos, Nigeria
+              {settings.heroEyebrow}
             </p>
           </FadeIn>
           <FadeIn delay={0.2}>
             <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-(--warm-white) leading-[0.95]">
-              Rooted in
+              {settings.heroHeadline}
               <br />
-              <span className="italic">Nature</span>
+              <span className="italic">{settings.heroHeadlineAccent}</span>
             </h1>
           </FadeIn>
           <FadeIn delay={0.35}>
             <p className="mt-8 text-base md:text-lg text-(--warm-white)/90 max-w-xl leading-relaxed">
-              Premium reed diffusers crafted to transform a room into an
-              experience. Six signature scents. One quiet ritual.
+              {settings.heroNote}
             </p>
           </FadeIn>
           <FadeIn delay={0.5}>
@@ -195,14 +202,13 @@ export default async function HomePage() {
           <FadeIn>
             <div className="text-center mb-16 max-w-2xl mx-auto">
               <p className="text-[0.7rem] tracking-[0.4em] uppercase text-(--smoke) mb-4">
-                The Range
+                {settings.rangeEyebrow}
               </p>
               <h2 className="font-display text-4xl md:text-5xl text-(--charcoal) mb-5">
-                Four formats. Every occasion.
+                {settings.rangeTitle}
               </h2>
               <p className="text-base text-(--smoke) leading-relaxed">
-                From flagship statement pieces to the compact car diffuser —
-                Orika scales with the space and the moment.
+                {settings.rangeSubtitle}
               </p>
             </div>
           </FadeIn>
