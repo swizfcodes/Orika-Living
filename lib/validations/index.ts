@@ -24,6 +24,10 @@ export const deliveryAddressSchema = z.object({
   state: z.string().min(2),
 });
 
+// Payment methods the storefront can initiate. Mirrors the values the
+// hub accepts on POST /store/orders (body.payment_method).
+export const paymentMethodSchema = z.enum(["paystack", "optimus_pay"]);
+
 export const checkoutSchema = z.object({
   delivery_address: deliveryAddressSchema,
   items: z
@@ -35,6 +39,8 @@ export const checkoutSchema = z.object({
     )
     .min(1, "Cart is empty")
     .max(50, "Too many items in cart"),
+  // Optional — defaults to "paystack" on the backend when omitted.
+  payment_method: paymentMethodSchema.optional(),
 });
 
 // Server-side cap on the total order amount (in kobo). Defensive bound so a
@@ -66,5 +72,6 @@ export const productSchema = z.object({
 
 export type EnquiryInput = z.infer<typeof enquirySchema>;
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
+export type PaymentMethod = z.infer<typeof paymentMethodSchema>;
 export type DeliveryAddressInput = z.infer<typeof deliveryAddressSchema>;
 export type ProductInput = z.infer<typeof productSchema>;

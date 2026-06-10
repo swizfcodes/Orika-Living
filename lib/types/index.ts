@@ -53,12 +53,19 @@ export interface CartItem {
   format: ProductFormat;
 }
 
+export type PaymentMethod = "paystack" | "optimus_pay";
+
 export interface Order {
   id: string;
   customer_id: string;
   status: OrderStatus;
   total_kobo: number;
   paystack_ref: string;
+  // Present only on Optimus Pay orders (virtual-account bank transfer).
+  payment_method?: PaymentMethod;
+  optimus_transaction_ref?: string | null;
+  optimus_virtual_account?: string | null;
+  optimus_bank_name?: string | null;
   delivery_address: DeliveryAddress;
   items: CartItem[];
   created_at: string;

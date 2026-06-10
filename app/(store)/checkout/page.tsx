@@ -10,13 +10,34 @@ import {
   selectCartTotal,
 } from "@/lib/store/cartSlice";
 import { fromKobo } from "@/lib/types";
+import type { PaymentMethod } from "@/lib/types";
 import { createOrderAction } from "@/lib/checkout/actions";
 import { useCheckoutDetails } from "@/lib/checkout/useCheckoutDetails";
 import FadeIn from "@/components/motion/FadeIn";
+import PaymentMethodModal from "@/components/checkout/PaymentMethodModal";
+import OptimusTransferPanel from "@/components/checkout/OptimusTransferPanel";
 
 type FieldErrors = Partial<
   Record<"full_name" | "phone" | "email" | "street" | "city" | "state", string>
 >;
+
+interface DeliveryAddress {
+  full_name: string;
+  phone: string;
+  email: string;
+  street: string;
+  city: string;
+  state: string;
+}
+
+// Set when an Optimus Pay order is created — drives the bank-transfer panel.
+interface OptimusOrder {
+  order_id: string;
+  transaction_ref: string;
+  virtual_account: string;
+  bank_name: string;
+  amount_kobo: number;
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -27,6 +48,16 @@ export default function CheckoutPage() {
   const [pending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+
+  // Payment-method selection flow. After the form validates we capture
+  // the address and open the modal; the chosen method then creates the
+  // order. Optimus orders surface a bank-transfer panel instead of a popup.
+  const [address, setAddress] = useState<DeliveryAddress | null>(null);
+  const [methodModalOpen, setMethodModalOpen] = useState(false);
+  const [pendingMethod, setPendingMethod] = useState<PaymentMethod | null>(
+    null,
+  );
+  const [optimusOrder, setOptimusOrder] = useState<OptimusOrder | null>(null);
 
   // Prefill from previously-entered details (survives refresh + payment
   // failure). loaded flips true after the client reads localStorage.
@@ -62,11 +93,12 @@ export default function CheckoutPage() {
     );
   }
 
+  // Step 1 — validate the form, then open the payment-method modal.
   const onSubmit = (formData: FormData) => {
     setFormError(null);
     setFieldErrors({});
 
-    const address = {
+    const entered: DeliveryAddress = {
       full_name: String(formData.get("full_name") ?? "").trim(),
       phone: String(formData.get("phone") ?? "").trim(),
       email: String(formData.get("email") ?? "").trim(),
@@ -76,13 +108,13 @@ export default function CheckoutPage() {
     };
 
     const errors: FieldErrors = {};
-    if (address.full_name.length < 2) errors.full_name = "Required";
-    if (address.phone.length < 10) errors.phone = "Enter a valid phone";
-    if (!/^\S+@\S+\.\S+$/.test(address.email))
+    if (entered.full_name.length < 2) errors.full_name = "Required";
+    if (entered.phone.length < 10) errors.phone = "Enter a valid phone";
+    if (!/^\S+@\S+\.\S+$/.test(entered.email))
       errors.email = "Enter a valid email";
-    if (address.street.length < 5) errors.street = "Required";
-    if (address.city.length < 2) errors.city = "Required";
-    if (address.state.length < 2) errors.state = "Required";
+    if (entered.street.length < 5) errors.street = "Required";
+    if (entered.city.length < 2) errors.city = "Required";
+    if (entered.state.length < 2) errors.state = "Required";
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
@@ -90,21 +122,51 @@ export default function CheckoutPage() {
 
     // Persist the entered details now — before payment — so that if the
     // payment fails or is cancelled, the form prefills on the next attempt.
-    save(address);
+    save(entered);
+    setAddress(entered);
+    setMethodModalOpen(true);
+  };
+
+  // Step 2 — a method was chosen. Create the order for that method and
+  // route to the matching payment experience.
+  const handleSelectMethod = (method: PaymentMethod) => {
+    if (!address) return;
+    setFormError(null);
+    setPendingMethod(method);
 
     startTransition(async () => {
       const result = await createOrderAction({
         delivery_address: address,
         items: checkoutItems,
+        payment_method: method,
       });
 
       if (!result.ok) {
+        setPendingMethod(null);
+        setMethodModalOpen(false);
         setFormError(result.error);
         return;
       }
 
+      if (result.payment_method === "optimus_pay") {
+        // Swap the selection modal for the bank-transfer panel.
+        setMethodModalOpen(false);
+        setPendingMethod(null);
+        setOptimusOrder({
+          order_id: result.order_id,
+          transaction_ref: result.transaction_ref,
+          virtual_account: result.virtual_account,
+          bank_name: result.bank_name,
+          amount_kobo: result.amount_kobo,
+        });
+        return;
+      }
+
+      // Paystack — launch the popup.
       const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
       if (!publicKey) {
+        setPendingMethod(null);
+        setMethodModalOpen(false);
         setFormError("Payment is not configured. Please contact us.");
         return;
       }
@@ -113,6 +175,8 @@ export default function CheckoutPage() {
       // init, so importing it at top-level crashes Next's server render.
       const { default: PaystackPop } = await import("@paystack/inline-js");
       const paystack = new PaystackPop();
+      setMethodModalOpen(false);
+      setPendingMethod(null);
       paystack.newTransaction({
         key: publicKey,
         email: result.email,
@@ -148,6 +212,13 @@ export default function CheckoutPage() {
         },
       });
     });
+  };
+
+  // Optimus transfer confirmed by the hub — clear cart and show the order.
+  const handleOptimusConfirmed = (orderId: string) => {
+    dispatch(clearCart());
+    clear();
+    router.push(`/orders/${orderId}`);
   };
 
   return (
@@ -252,8 +323,8 @@ export default function CheckoutPage() {
           </button>
 
           <p className="text-xs text-(--smoke) leading-relaxed">
-            Payments are processed securely by Paystack. Orika Living does not
-            store card details.
+            Payments are processed securely. Orika Living does not store card
+            details.
           </p>
         </form>
 
@@ -296,6 +367,28 @@ export default function CheckoutPage() {
           </div>
         </aside>
       </div>
+
+      <PaymentMethodModal
+        open={methodModalOpen}
+        total={total}
+        pending={pending}
+        pendingMethod={pendingMethod}
+        onSelect={handleSelectMethod}
+        onClose={() => setMethodModalOpen(false)}
+      />
+
+      {optimusOrder && (
+        <OptimusTransferPanel
+          open={!!optimusOrder}
+          orderId={optimusOrder.order_id}
+          transactionRef={optimusOrder.transaction_ref}
+          virtualAccount={optimusOrder.virtual_account}
+          bankName={optimusOrder.bank_name}
+          amountKobo={optimusOrder.amount_kobo}
+          onConfirmed={handleOptimusConfirmed}
+          onClose={() => setOptimusOrder(null)}
+        />
+      )}
     </section>
   );
 }
